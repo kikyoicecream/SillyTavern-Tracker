@@ -265,7 +265,7 @@ function getCharacterDescriptions() {
  * @returns {string|null} The recent messages formatted string.
  */
 function getRecentMessages(mesNum) {
-	const messages = chat.filter((c, index) => !c.is_system && index < mesNum).slice(-extensionSettings.numberOfMessages);
+	const messages = chat.filter((c, index) => !c.is_system && index <= mesNum).slice(0 - extensionSettings.numberOfMessages);
 
 	if (messages.length === 0) return null;
 
@@ -306,7 +306,7 @@ function getRecentMessages(mesNum) {
  */
 function getCurrentTracker(mesNum) {
 	debug("Getting current tracker for message:", { mesNum });
-	const message = chat[mesNum - 1];
+	const message = chat[mesNum];
 	const tracker = message.tracker;
 	if (tracker) {
 		return jsonToYAML(tracker);
