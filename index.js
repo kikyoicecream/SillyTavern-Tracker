@@ -24,12 +24,12 @@ if (!extension_settings[extensionName.toLowerCase()]) {
 const extensionSettings = extension_settings[extensionName.toLowerCase()];
 
 // Logging functions
-const log = (...msg) => console.log(`[${extensionName}]`, ...msg);
+export const log = (...msg) => console.log(`[${extensionName}]`, ...msg);
 const warn = (...msg) => console.warn(`[${extensionName}] Warning`, ...msg);
 const error = (msg) => {
 	throw new Error(`[${extensionName}] ${msg}`);
 };
-const debug = (...msg) => {
+export const debug = (...msg) => {
 	if (extensionSettings.debugMode) {
 		console.log(`[${extensionName} debug]`, ...msg);
 	}
@@ -309,7 +309,7 @@ function getCurrentTracker(mesNum) {
 	debug("Getting current tracker for message:", { mesNum });
 	const message = chat[mesNum];
 	const tracker = message.tracker;
-	if (tracker) {
+	if (tracker && Object.keys(tracker).length !== 0) {
 		return jsonToYAML(tracker);
 	} else {
 		return extensionSettings.defaultTracker;
@@ -377,7 +377,7 @@ function showTrackerUI(mesNum) {
 
 	let tracker = chat[mesNum]?.tracker;
 
-	if (!tracker) {
+	if (!tracker || Object.keys(tracker).length === 0) {
 		if (extensionSettings.defaultTracker) tracker = JSON.parse(yamlToJSON(extensionSettings.defaultTracker));
 		else tracker = {};
 	}
@@ -417,6 +417,7 @@ function showTrackerUI(mesNum) {
 				chat[mesNum].tracker = newTracker;
 				saveChatDebounced();
 				updateTrackerUI(newTracker, mesNum, mesNum === lastMessageID);
+				addtrackerToMessages(false, extensionSettings.mesTrackerTemplate, mesNum);
 			}
 		});
 
@@ -451,6 +452,7 @@ function updateTrackerUI(tracker, mesNum, isCurrent = false, editMode = false, r
 			updatePath(tracker, [...path], value);
 			chat[mesNum].tracker = JSON.parse(JSON.stringify(tracker));
 			saveChatDebounced();
+			addtrackerToMessages(false, extensionSettings.mesTrackerTemplate, mesNum);
 		});
 	} else if (rawEdit) {
 		const textarea = document.createElement("textarea");
@@ -464,6 +466,7 @@ function updateTrackerUI(tracker, mesNum, isCurrent = false, editMode = false, r
 				const newTracker = JSON.parse(newValue);
 				chat[mesNum].tracker = newTracker;
 				saveChatDebounced();
+				addtrackerToMessages(false, extensionSettings.mesTrackerTemplate, mesNum);
 			} catch (error) {
 				warn("Failed to parse tracker JSON:", error);
 			}
@@ -490,24 +493,32 @@ function updateTrackerUI(tracker, mesNum, isCurrent = false, editMode = false, r
  * Adds tracker information to chat messages.
  * @param {boolean} [refresh=false] - Whether to refresh existing trackers.
  * @param {string|null} [template=null] - The template to use.
+ * @param {number|null} [mesId=null] - The message ID to add a tracker to.
  */
-function addtrackerToMessages(refresh = false, template = null) {
+function addtrackerToMessages(refresh = false, template = null, mesId = null) {
 	if (refresh) {
 		let trackers = $("#chat .mes_tracker");
 		let messages = trackers.closest(".mes");
 		trackers.remove();
 		messages.removeAttr("has_tracker");
-		$("#chat .mes .mes_block .mes_tracker").remove();
+	}
+
+	let selector = "#chat .mes:not(.smallSysMes,[has_tracker=true])";
+
+	if (mesId) {
+		selector = `#chat .mes[mesid="${mesId}"]`;
+		$(`${selector} .mes_tracker`).remove();
 	}
 
 	if (!template) template = extensionSettings.mesTrackerTemplate;
 
 	// Iterate over messages and add trackers
-	$("#chat .mes:not(.smallSysMes,[has_tracker=true])").each(async (index, element) => {
+	$(selector).each(async (index, element) => {
 		const mesId = $(element).attr("mesid");
 		const mes = chat[mesId];
 		const mesTracker = mes.tracker;
-		if (mesTracker) {
+		debug("Adding tracker to message:", { mesId, mesTracker });
+		if (mesTracker && Object.keys(mesTracker).length !== 0) {
 			element.setAttribute("has_tracker", true);
 			const textBlock = $(element).find(".mes_block .mes_text");
 			const trackerHtml = renderMessageTrackerTemplate(template, mesTracker);

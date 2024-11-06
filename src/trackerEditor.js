@@ -1,3 +1,5 @@
+import { debug } from "../index.js";
+
 // #region Utility Functions
 
 /**
@@ -50,7 +52,7 @@ export function resizeTextarea(textarea) {
  * @param {boolean} isAddingToArray - Indicates if adding to an array.
  */
 function createAddFieldModal(onSubmit, siblings = null, isAddingToArray = false) {
-	console.log("Opening Add Field Modal");
+	debug("Opening Add Field Modal");
 
 	const modal = document.createElement("dialog");
 	modal.className = "tracker-new-field-modal popup popup--animation-fast";
@@ -93,7 +95,7 @@ function createAddFieldModal(onSubmit, siblings = null, isAddingToArray = false)
 				return;
 			}
 
-			console.log(`Adding new field: key='${key}', type='${type}'`);
+			debug(`Adding new field: key='${key}', type='${type}'`);
 
 			let newItem;
 			newItem = type === "object" ? {} : type === "array" ? [] : type === "clone_sibling_structure" && siblings ? cloneStructure(siblings[0]) : "";
@@ -106,7 +108,7 @@ function createAddFieldModal(onSubmit, siblings = null, isAddingToArray = false)
 	// Cancel button
 	modalContent.appendChild(
 		createButton("Cancel", "tracker-modal-cancel-button", () => {
-			console.log("Add Field Modal cancelled");
+			debug("Add Field Modal cancelled");
 			document.body.removeChild(modal);
 		})
 	);
@@ -175,7 +177,7 @@ export function createEditTrackerElement(tracker, container, onUpdateCallback) {
 				createButton("+ Add Item", "tracker-add-item-button", () => {
 					createAddFieldModal(
 						(_, newItem) => {
-							console.log(`Adding item to array at path ${currentPath.join(".")}`);
+							debug(`Adding item to array at path ${currentPath.join(".")}`);
 							value.push(newItem);
 							onUpdateCallback(currentPath, value);
 							createEditTrackerElement(tracker, container, onUpdateCallback);
@@ -199,7 +201,7 @@ export function createEditTrackerElement(tracker, container, onUpdateCallback) {
 				createButton("+ Add Field", "tracker-add-field-button", () => {
 					createAddFieldModal(
 						(newKey, newItem) => {
-							console.log(`Adding field '${newKey}' to object at path ${currentPath.join(".")}`);
+							debug(`Adding field '${newKey}' to object at path ${currentPath.join(".")}`);
 							value[newKey] = newItem;
 							onUpdateCallback(currentPath, value);
 							createEditTrackerElement(tracker, container, onUpdateCallback);
@@ -224,7 +226,7 @@ export function createEditTrackerElement(tracker, container, onUpdateCallback) {
 			textarea.oninput = () => {
 				resizeTextarea(textarea);
 				parent[key] = textarea.value;
-				console.log(`Updated field at path ${currentPath.join(".")}:`, textarea.value);
+				debug(`Updated field at path ${currentPath.join(".")}:`, textarea.value);
 				onUpdateCallback(currentPath, textarea.value);
 			};
 			inputContainer.appendChild(textarea);
@@ -232,7 +234,7 @@ export function createEditTrackerElement(tracker, container, onUpdateCallback) {
 			// Remove button
 			inputContainer.appendChild(
 				createButton("", "tracker-remove-button fa-solid fa-trash-can", () => {
-					console.log(`Removing field at path ${currentPath.join(".")}`);
+					debug(`Removing field at path ${currentPath.join(".")}`);
 					Array.isArray(parent) ? parent.splice(key, 1) : delete parent[key];
 					onUpdateCallback(currentPath.slice(0, -1), parent);
 					createEditTrackerElement(tracker, container, onUpdateCallback);

@@ -131,11 +131,6 @@
 	}
 }
 
-#chat:not(:has(.mes:first-child.smallSysMes)) .mes[mesid="0"] .mes_tracker_button,
-#chat:has(.mes:first-child.smallSysMes) .mes[mesid="1"] .mes_tracker_button {
-	display: none;
-}
-
 .mes_tracker {
 	.tracker_default_mes_template {
 		font-size: smaller;
