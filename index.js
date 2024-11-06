@@ -1,8 +1,9 @@
 import { extension_settings } from "../../../extensions.js";
-import { saveSettingsDebounced, saveChatDebounced, eventSource, event_types, generateRaw, chat, chat_metadata, characters, this_chid, getCharacterCardFields, name1, animation_duration, setExtensionPrompt } from "../../../../script.js";
+import { saveSettingsDebounced, saveChatDebounced, eventSource, event_types, generateRaw, chat, chat_metadata, characters, this_chid, getCharacterCardFields, name1, animation_duration, setExtensionPrompt, deactivateSendButtons, activateSendButtons, getBiasStrings, system_message_types, sendSystemMessage, sendMessageAsUser } from "../../../../script.js";
 import { groups, selected_group, is_group_generating } from "../../../../scripts/group-chats.js";
 import { dragElement } from "../../../../scripts/RossAscends-mods.js";
 import { loadMovingUIState } from "../../../../scripts/power-user.js";
+import { hasPendingFileAttachment } from "../../../../scripts/chats.js";
 
 import { yamlToJSON, jsonToYAML } from "./lib/ymlParser.js";
 import { defaultSettings } from "./src/defaultSettings.js";
@@ -153,7 +154,7 @@ async function generateTracker(mesNum) {
 	let responseLength = extensionSettings.responseLength > 0 ? extensionSettings.responseLength : null;
 
 	// Generate tracker using the AI model
-	log("Generating tracker with prompts:", { systemPrompt, requestPrompt, responseLength });
+	log("Generating tracker with prompts:", { systemPrompt, requestPrompt, responseLength, mesNum });
 	var tracker = await generateRaw(requestPrompt, null, false, false, systemPrompt, responseLength);
 	debug("Generated tracker:", { tracker });
 
@@ -611,6 +612,17 @@ async function onGenerateAfterCommands(type, options, dryRun) {
 	if (!isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !messageTypes.includes(type))) return;
 	log("After generation commands:", [type, options, dryRun]);
 
+	const stopButtonVisible = $("#mes_stop").css("display") !== "none";
+	if (!stopButtonVisible) {
+		deactivateSendButtons();
+	}
+
+	chat_metadata.tracker = null;
+	saveChatDebounced();
+
+	await sendUserMessage(type, options, dryRun);
+	debug("Message sent:", { type, options, dryRun });
+
 	let messageID = getLastNonSystemMessageIndex();
 	const lastMessage = chat[messageID];
 
@@ -620,6 +632,10 @@ async function onGenerateAfterCommands(type, options, dryRun) {
 		if (lastMessage.tracker) {
 			trackerYAML = jsonToYAML(lastMessage.tracker);
 			await setExtensionPrompt("tracker", trackerYAML, 1, 0, true);
+			debug("Stop button visible:", stopButtonVisible);
+			if (!stopButtonVisible) {
+				$("#mes_stop").css({ display: "none" });
+			}
 			return;
 		}
 	}
@@ -635,6 +651,30 @@ async function onGenerateAfterCommands(type, options, dryRun) {
 	debug("Generated tracker:", { newTracker });
 
 	await setExtensionPrompt("tracker", trackerYAML, 1, 0, true);
+
+	if (!stopButtonVisible) {
+		activateSendButtons();
+	}
+}
+
+async function sendUserMessage(type, options, dryRun) {
+	if (type !== "regenerate" && type !== "swipe" && type !== "quiet" && type !== "impersonate" && !dryRun) {
+		let textareaText = String($("#send_textarea").val());
+		$("#send_textarea")
+			.val("")[0]
+			.dispatchEvent(new Event("input", { bubbles: true }));
+		let { messageBias, promptBias, isUserPromptBias } = getBiasStrings(textareaText, type);
+		const noAttachTypes = ["regenerate", "swipe", "impersonate", "quiet", "continue", "ask_command"];
+		if ((textareaText !== "" || (hasPendingFileAttachment() && !noAttachTypes.includes(type))) && !options.automatic_trigger) {
+			if (messageBias && !removeMacros(textareaText)) {
+				sendSystemMessage(system_message_types.GENERIC, " ", {
+					bias: messageBias,
+				});
+			} else {
+				await sendMessageAsUser(textareaText, messageBias);
+			}
+		}
+	}
 }
 
 /**
@@ -680,9 +720,16 @@ function onUserMessageRendered() {
  * @param {number} mesId - The message ID.
  */
 async function generateMessageTracker(mesId) {
+	const stopButtonVisible = $("#mes_stop").css("display") !== "none";
+
+	if (!stopButtonVisible) {
+		deactivateSendButtons();
+	}
+
 	const tempTracker = chat_metadata.tracker;
 	if (tempTracker) {
-		chat[mesId].tracker = tempTracker;
+		chat[mesId].tracker = JSON.parse(JSON.stringify(tempTracker));
+		chat_metadata.tracker = null;
 		saveChatDebounced();
 	} else {
 		const newTracker = await generateTracker(mesId);
@@ -691,16 +738,10 @@ async function generateMessageTracker(mesId) {
 			saveChatDebounced();
 		}
 	}
-}
 
-/**
- * Clears the temporary tracker from chat metadata.
- */
-function clearTempTracker() {
-	if (!isEnabled()) return;
-	log("Clearing temporary tracker");
-	chat_metadata.tracker = null;
-	saveChatDebounced();
+	if (!stopButtonVisible) {
+		activateSendButtons();
+	}
 }
 
 // #endregion
