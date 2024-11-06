@@ -1,7 +1,3 @@
-Here's an improved version of your README that keeps your original structure but refines clarity and detail for each section:
-
----
-
 # SillyTavern Tracker Extension
 
 An extension for SillyTavern that provides a customizable tracking feature to monitor character interactions and story elements, enhancing the depth and continuity of your storytelling.
