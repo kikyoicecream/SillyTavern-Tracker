@@ -129,8 +129,8 @@ function registerSettingsListeners() {
 	$("#tracker_default_tracker").on("input", onSettingInputareaInput("defaultTracker"));
 	$("#tracker_request_prompt").on("input", onSettingInputareaInput("requestPrompt"));
 	$("#tracker_mes_tracker_template").on("input", onSettingInputareaInput("mesTrackerTemplate"));
-	$("#tracker_number_of_messages").on("input", onSettingInputareaInput("numberOfMessages"));
-	$("#tracker_response_length").on("input", onSettingInputareaInput("responseLength"));
+	$("#tracker_number_of_messages").on("input", onSettingNumberInput("numberOfMessages"));
+	$("#tracker_response_length").on("input", onSettingNumberInput("responseLength"));
 	$("#tracker_debug").on("input", onSettingCheckboxInput("debugMode"));
 }
 
@@ -150,12 +150,12 @@ async function generateTracker(mesNum) {
 	const systemPrompt = getSystemPrompt(mesNum);
 	const requestPrompt = getRequestPrompt();
 
-	log("Generating tracker with prompts:", { systemPrompt, requestPrompt });
-
 	let responseLength = extensionSettings.responseLength > 0 ? extensionSettings.responseLength : null;
 
 	// Generate tracker using the AI model
+	log("Generating tracker with prompts:", { systemPrompt, requestPrompt, responseLength });
 	var tracker = await generateRaw(requestPrompt, null, false, false, systemPrompt, responseLength);
+	debug("Generated tracker:", { tracker });
 
 	let newTracker;
 	try {
@@ -166,7 +166,7 @@ async function generateTracker(mesNum) {
 		warn("Failed to parse tracker:", error);
 	}
 
-	debug("Generated tracker:", { newTracker });
+	debug("Parsed tracker:", { newTracker });
 
 	return newTracker;
 }
@@ -547,6 +547,31 @@ function onSettingInputareaInput(settingName) {
 		saveSettingsDebounced();
 		if (settingName === "mesTrackerTemplate") {
 			addtrackerToMessages(true, value);
+		}
+	};
+}
+
+/**
+ * Handles input changes to numeric settings.
+ * @param {string} settingName - The name of the setting.
+ * @returns {function} The event handler function.
+ */
+function onSettingNumberInput(settingName) {
+	return function () {
+		debug("Setting number input:", settingName);
+		let value = parseFloat($(this).val());
+
+		// Handle invalid number input (e.g., empty or NaN)
+		if (isNaN(value)) {
+			debug("Invalid number input. Setting value to 0 by default.");
+			value = 0;
+		}
+
+		extensionSettings[settingName] = value;
+		saveSettingsDebounced();
+
+		if (settingName === "someSpecialNumberSetting") {
+			handleSpecialNumberSetting(value);
 		}
 	};
 }
