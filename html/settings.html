@@ -1,0 +1,71 @@
+<div id="tracker_settings" class="extension_container">
+	<div class="inline-drawer">
+		<div class="inline-drawer-toggle inline-drawer-header">
+			<b>Tracker</b>
+			<div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+		</div>
+		<div class="inline-drawer-content">
+			<div class="tracker-block flex-container">
+				<input id="tracker_enable" type="checkbox" />
+				<label for="tracker_enable">Enable Tracker</label>
+			</div>
+			<hr class="sysHR" />
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_context_prompt">Context Template</label><br />
+				<small>The context template that will be used to generate the tracker. You can use these macros:<br />{{trackerSystemPrompt}}<br />{{characterDescriptions}}<br />{{trackerExamples}}<br />{{recentMessages}}<br />{{currentTracker}}</small>
+				<textarea id="tracker_context_prompt" class="text_pole" rows="5" placeholder="Enter the context template that will be used to generate the tracker"></textarea>
+			</div>
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_system_prompt">System Prompt</label><br />
+				<small>The system prompt that will be used to generate the tracker. You can use these macros:<br />{{charNames}}</small>
+				<textarea id="tracker_system_prompt" class="text_pole" rows="5" placeholder="Enter the system prompt that will be used to generate the tracker"></textarea>
+			</div>
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_character_description">Character Description Template</label><br />
+				<small>This template will be used for the character description macro. It is run on each character in the chat and your persona. You can use these macros:<br />{{char}}<br />{{charDescription}}</small>
+				<textarea id="tracker_character_description" class="text_pole" rows="5" placeholder="Enter the template will be used for the character description macro"></textarea>
+			</div>
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_recent_messages">Recent Messages Template</label><br />
+				<small>This template will be used for the recent messages macro. You can use these macros:<br />{{char}}<br />{{message}}<br />{{trackerYAML}}<br />{{#if tracker}}...{{/if}}</small>
+				<textarea id="tracker_recent_messages" class="text_pole" rows="5" placeholder="Enter the template will be used for the recent messages macro"></textarea>
+			</div>
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_example_trackers">Example Trackers</label><br />
+				<small>The example trackers that will be used to generate the tracker. Use &lt;START&gt; as a separator.</small>
+				<textarea id="tracker_example_trackers" class="text_pole" rows="5" placeholder="Enter the example trackers that will be used to generate the tracker"></textarea>
+			</div>
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_default_tracker">Default Tracker</label><br />
+				<small>The default tracker is used in place of the {{currentTracker}} macro if there is no tracking data.</small>
+				<textarea id="tracker_default_tracker" class="text_pole" rows="5" placeholder="Enter the default tracker that will be used to generate the tracker"></textarea>
+			</div>
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_request_prompt">Request Prompt</label><br />
+				<small>The request prompt that will be used to generate the tracker.</small>
+				<textarea id="tracker_request_prompt" class="text_pole" rows="5" placeholder="Enter the request prompt that will be used to generate the tracker"></textarea>
+			</div>
+			<hr class="sysHR" />
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_mes_tracker_template">Message Tracker HTML</label><br />
+				<small>The html for the tracker preview that shows up in each message. You can use these macros:<br />{{&lt;key.subkey&gt;}}<br />{{#join "delimiter" arrayKey}}<br />{{#foreach objectOrArrayKey itemName}}...{{itemName.subKey}}...{{/foreach}}<br />{{#if key.subKey}}...{{/if}}</small>
+				<textarea id="tracker_mes_tracker_template" class="text_pole" rows="5" placeholder="Enter the request prompt that will be used to generate the tracker"></textarea>
+			</div>
+			<hr class="sysHR" />
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_number_of_messages">Number of recent messages to include</label>
+				<input max="99" min="1" class="text_pole" id="tracker_number_of_messages" type="number" />
+			</div>
+			<div class="tracker-block m-b-1 m-t-1" title="This setting restricts the response length for tracker prompts (in tokens). Leave it empty or set to 0 to disable">
+				<label for="tracker_response_length">Response Length</label><br />
+				<small>This setting restricts the response length for tracker prompts (in tokens). Leave it empty or set to 0 to disable</small>
+				<input min="0" class="text_pole" id="tracker_response_length" type="number" />
+			</div>
+			<hr class="sysHR" />
+			<div class="tracker-block flex-container">
+				<input id="tracker_debug" type="checkbox" />
+				<label for="tracker_debug">Enable Debug Logging</label>
+			</div>
+		</div>
+	</div>
+</div>

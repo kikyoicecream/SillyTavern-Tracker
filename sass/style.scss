@@ -1,0 +1,167 @@
+#trackerUI {
+	top: unset;
+	flex-direction: column;
+	padding: 10px;
+	gap: 10px;
+}
+
+#trackerUIHeader {
+	font-size: 17.55px;
+	font-weight: 700;
+}
+
+#trackerUIContents {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	gap: 5px;
+
+	.tracker-field-textarea {
+		resize: none;
+	}
+
+	.tracker-field-wrapper {
+		label {
+			padding-right: 10px;
+			line-height: 30px;
+		}
+
+		.tracker-object-label {
+			font-weight: bold;
+		}
+	}
+
+	.tracker-object-wrapper,
+	.tracker-view-object-wrapper {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 5px !important;
+
+		&::before,
+		&::after {
+			content: "";
+		}
+
+		&:not(:first-child) {
+			&::before,
+			&::after {
+				content: "";
+				background-image: linear-gradient(90deg, var(--transparent), var(--SmartThemeBodyColor), var(--transparent));
+				height: 1px;
+				min-height: 1px;
+				border: 0;
+				opacity: 0.2;
+			}
+		}
+
+		.tracker-object-container,
+		.tracker-view-object-container {
+			padding-left: 20px;
+		}
+	}
+
+	> .tracker-object-wrapper,
+	> .tracker-view-object-wrapper {
+		gap: 0px !important;
+	}
+
+	.tracker-array-container,
+	.tracker-object-container,
+	.tracker-view-object-container {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		gap: 5px;
+
+		button {
+			margin-left: auto;
+		}
+	}
+
+	.tracker-array-container {
+		gap: 10px;
+	}
+
+	.tracker-remove-button {
+		width: 26px;
+		height: 26px;
+	}
+
+	.tracker-input-container {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		gap: 10px;
+	}
+
+	.tracker-view-field-wrapper {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		gap: 10px;
+
+		.tracker-view-field-label {
+			font-weight: bold;
+			width: 80px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			flex-shrink: 0;
+		}
+	}
+
+	.tracker-view-object-wrapper {
+		> .tracker-view-field-label {
+			width: 100%;
+		}
+	}
+}
+
+#trackerUIFooter {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: 10px;
+
+	button {
+		width: fit-content;
+	}
+}
+
+#chat:not(:has(.mes:first-child.smallSysMes)) .mes[mesid="0"] .mes_tracker_button,
+#chat:has(.mes:first-child.smallSysMes) .mes[mesid="1"] .mes_tracker_button {
+	display: none;
+}
+
+.mes_tracker {
+	.tracker_default_mes_template {
+		font-size: smaller;
+		tr {
+			td {
+				vertical-align: top;
+				&:first-child {
+					text-align: right;
+					font-weight: bold;
+					width: 60px;
+				}
+			}
+		}
+		details {
+			summary {
+				font-weight: bold;
+				span {
+					left: -3.25px;
+					position: relative;
+					display: inline-block;
+				}
+			}
+			table,
+			.mes_tracker_characters {
+				padding-left: 20px;
+			}
+		}
+	}
+}
