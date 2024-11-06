@@ -85,7 +85,8 @@ function updatePath(obj, path, newValue) {
  * Initializes the extension settings by merging default and existing settings.
  */
 async function initSettings() {
-	Object.assign(extensionSettings, defaultSettings);
+	const settings = JSON.parse(JSON.stringify(extensionSettings));
+	Object.assign(extensionSettings, defaultSettings, settings);
 	saveSettingsDebounced();
 }
 
@@ -526,6 +527,7 @@ function addtrackerToMessages(refresh = false, template = null) {
  */
 function onSettingCheckboxInput(settingName) {
 	return function () {
+		debug("Setting checkbox input:", settingName);
 		const value = Boolean($(this).prop("checked"));
 		extensionSettings[settingName] = value;
 		saveSettingsDebounced();
@@ -539,8 +541,9 @@ function onSettingCheckboxInput(settingName) {
  */
 function onSettingInputareaInput(settingName) {
 	return function () {
+		debug("Setting input area input:", settingName);
 		const value = $(this).val();
-		extension_settings[extensionName.toLowerCase()][settingName] = value;
+		extensionSettings[settingName] = value;
 		saveSettingsDebounced();
 		if (settingName === "mesTrackerTemplate") {
 			addtrackerToMessages(true, value);
