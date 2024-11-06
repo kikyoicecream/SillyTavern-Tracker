@@ -15,6 +15,11 @@ import { renderMessageTrackerTemplate } from "./src/templateProcessor.js";
 const extensionName = "Tracker";
 const extensionNameLong = `SillyTavern-${extensionName}`;
 const extensionFolderPath = `scripts/extensions/third-party/${extensionNameLong}`;
+
+if (!extension_settings[extensionName.toLowerCase()]) {
+	extension_settings[extensionName.toLowerCase()] = {};
+}
+
 const extensionSettings = extension_settings[extensionName.toLowerCase()];
 
 // Logging functions
@@ -80,10 +85,7 @@ function updatePath(obj, path, newValue) {
  * Initializes the extension settings by merging default and existing settings.
  */
 async function initSettings() {
-	if (!extensionSettings || extensionSettings == {}) {
-		extension_settings[extensionName.toLowerCase()] = {};
-	}
-	extension_settings[extensionName.toLowerCase()] = { ...defaultSettings, ...extensionSettings };
+	Object.assign(extensionSettings, defaultSettings);
 	saveSettingsDebounced();
 }
 
