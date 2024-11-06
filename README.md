@@ -1,6 +1,6 @@
 # SillyTavern Tracker Extension
 
-An extension for SillyTavern that provides a customizable tracking feature to monitor character interactions and story elements, enhancing the depth and continuity of your storytelling.
+An extension for SillyTavern that provides a customizable tracking feature to monitor character interactions and story elements.
 
 ## Features
 
