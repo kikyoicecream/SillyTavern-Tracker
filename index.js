@@ -95,7 +95,8 @@ async function initSettings() {
  * Checks if the extension is enabled.
  * @returns {boolean} True if enabled, false otherwise.
  */
-async function isEnabled() {
+function isEnabled() {
+	debug("Checking if extension is enabled:", extensionSettings.enabled);
 	return extensionSettings.enabled;
 }
 
@@ -619,8 +620,9 @@ const onGenerateAfterCombinePrompts = async (...args) => {
  * @param {boolean} dryRun - Whether it's a dry run.
  */
 async function onGenerateAfterCommands(type, options, dryRun) {
+	if (!isEnabled()) return;
 	var messageTypes = ["continue", "swipe", "regenerate", "impersonate"];
-	if (!isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !messageTypes.includes(type))) return;
+	if (chat.length == 0 || is_group_generating || (typeof type != "undefined" && !messageTypes.includes(type))) return;
 	log("After generation commands:", [type, options, dryRun]);
 
 	const stopButtonVisible = $("#mes_stop").css("display") !== "none";
@@ -731,6 +733,7 @@ function onUserMessageRendered() {
  * @param {number} mesId - The message ID.
  */
 async function generateMessageTracker(mesId) {
+	if (!isEnabled()) return;
 	if ((chat[mesId].tracker && Object.keys(chat[mesId].tracker) !== 0) || mesId == 0) return;
 
 	const stopButtonVisible = $("#mes_stop").css("display") !== "none";
