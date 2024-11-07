@@ -505,7 +505,7 @@ function addtrackerToMessages(refresh = false, template = null, mesId = null) {
 
 	let selector = "#chat .mes:not(.smallSysMes,[has_tracker=true])";
 
-	if (mesId) {
+	if (mesId !== null) {
 		selector = `#chat .mes[mesid="${mesId}"]`;
 		$(`${selector} .mes_tracker`).remove();
 	}
@@ -731,6 +731,8 @@ function onUserMessageRendered() {
  * @param {number} mesId - The message ID.
  */
 async function generateMessageTracker(mesId) {
+	if ((chat[mesId].tracker && Object.keys(chat[mesId].tracker) !== 0) || mesId == 0) return;
+
 	const stopButtonVisible = $("#mes_stop").css("display") !== "none";
 
 	if (!stopButtonVisible) {
