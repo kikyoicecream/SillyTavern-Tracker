@@ -94,7 +94,19 @@ export async function prepareMessageGeneration(type, options, dryRun) {
 	const lastMes = chat[mesId];
 
 	// Use existing tracker if available
-	if (["continue", "swipe", "regenerate"].includes(type)) {
+	if ("regenerate" == type) {
+		if (!lastMes.tracker && Object.keys(lastMes.tracker).length == 0) {
+			lastMes.tracker = await generateTracker(mesId);
+		}
+
+		chat_metadata.tracker = lastMes.tracker;
+		await saveChatConditional();
+		await injectTracker(lastMes.tracker);
+
+		if (manageStopButton) activateSendButtons();
+
+		return;
+	} else if (["continue", "swipe"].includes(type)) {
 		if (!lastMes.tracker && Object.keys(lastMes.tracker).length == 0) {
 			lastMes.tracker = await generateTracker(mesId);
 			await saveChatConditional();
