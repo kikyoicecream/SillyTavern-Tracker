@@ -1,4 +1,4 @@
-import { debug } from "../index.js";
+import { debug } from "../lib/utils.js";
 
 // #region Utility Functions
 

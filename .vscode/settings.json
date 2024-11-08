@@ -1,9 +1,0 @@
-{
-	"liveSassCompile.settings.formats": [
-
-		{
-			"savePath": "./",
-		}
-    ],
-    "liveSassCompile.settings.generateMap": false
-}

@@ -23,7 +23,7 @@ export function renderMessageTrackerTemplate(template, data) {
  */
 function tokenize(template) {
 	const tokens = [];
-	const regex = /{{\s*(\/?)\s*(#?)\s*([\w\.]+)(?:\s+([^}]*?))?\s*}}/g;
+	const regex = /{{\s*(\/?)\s*(#?)\s*([\w.]+)(?:\s+([^}]*?))?\s*}}/g;
 	let cursor = 0;
 	let match;
 
@@ -221,7 +221,7 @@ function extractInnerTokens(tokens, tagName) {
  */
 function getValue(variable, data, context) {
 	const parts = variable.split(".");
-	let value = context.hasOwnProperty(parts[0]) ? context[parts[0]] : data[parts[0]];
+	let value = Object.prototype.hasOwnProperty.call(context, parts[0]) ? context[parts[0]] : data[parts[0]];
 
 	// Check if the variable is the current item in a foreach loop and is an object or array.
 	if (parts.length === 1 && variable === context._currentItemName && value && typeof value === "object") {
@@ -232,7 +232,7 @@ function getValue(variable, data, context) {
 
 	// Traverse nested properties if necessary.
 	for (let i = 1; i < parts.length; i++) {
-		if (value && typeof value === "object" && value.hasOwnProperty(parts[i])) {
+		if (value && typeof value === "object" && Object.prototype.hasOwnProperty.call(value, parts[i])) {
 			value = value[parts[i]];
 		} else {
 			return undefined;
