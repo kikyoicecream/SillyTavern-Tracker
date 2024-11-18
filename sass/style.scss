@@ -131,6 +131,10 @@
 	}
 }
 
+#chat .mes[is_thoughts="true"] .mes_tracker_button {
+	display: none;
+}
+
 .mes_tracker {
 	.tracker_default_mes_template {
 		font-size: smaller;

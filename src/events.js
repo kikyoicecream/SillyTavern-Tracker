@@ -10,7 +10,7 @@ import { releaseGeneration } from "../lib/interconnection.js";
  * Event handler for when the chat changes.
  * @param {object} args - The event arguments.
  */
-function onChatChanged(args) {
+async function onChatChanged(args) {
 	$(document).off("mouseup touchend", "#show_more_messages", updateTrackerPreview);
 	if (!isEnabled()) return;
 	releaseGeneration();

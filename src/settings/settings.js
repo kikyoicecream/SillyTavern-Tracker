@@ -10,7 +10,7 @@ import { generationCaptured } from "../../lib/interconnection.js";
  * Checks if the extension is enabled.
  * @returns {boolean} True if enabled, false otherwise.
  */
-export function isEnabled() {
+export async function isEnabled() {
 	debug("Checking if extension is enabled:", extensionSettings.enabled);
 	return extensionSettings.enabled && generationCaptured();
 }
