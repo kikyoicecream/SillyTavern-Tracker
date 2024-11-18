@@ -11,6 +11,8 @@ import { initSettings } from "./src/settings/settings.js";
 import { initTrackerUI } from "./src/trackerUI.js";
 import { eventHandlers } from "./src/events.js";
 
+import { registerGenerationMutexListeners } from './lib/interconnection.js';
+
 export const extensionName = "Tracker";
 const extensionNameLong = `SillyTavern-${extensionName}`;
 export const extensionFolderPath = `scripts/extensions/third-party/${extensionNameLong}`;
@@ -22,6 +24,8 @@ jQuery(async () => {
 	await initSettings();
 	await initTrackerUI();
 });
+
+registerGenerationMutexListeners();
 
 eventSource.on(event_types.CHAT_CHANGED, eventHandlers.onChatChanged);
 eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, eventHandlers.onCharacterMessageRendered);

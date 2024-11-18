@@ -4,6 +4,7 @@ import { extensionFolderPath, extensionSettings } from "../../index.js";
 import { debug } from "../../lib/utils.js";
 import { defaultSettings } from "./defaultSettings.js";
 import { updateTrackerPreview } from "../trackerUI.js";
+import { generationCaptured } from "../../lib/interconnection.js";
 
 /**
  * Checks if the extension is enabled.
@@ -11,7 +12,7 @@ import { updateTrackerPreview } from "../trackerUI.js";
  */
 export function isEnabled() {
 	debug("Checking if extension is enabled:", extensionSettings.enabled);
-	return extensionSettings.enabled;
+	return extensionSettings.enabled && generationCaptured();
 }
 
 // #endregion

@@ -4,6 +4,7 @@ import { log } from "../lib/utils.js";
 import { isEnabled } from "./settings/settings.js";
 import { prepareMessageGeneration, addTrackerToMessage } from "./tracker.js";
 import { updateTrackerPreview, showTrackerUI } from "./trackerUI.js";
+import { releaseGeneration } from "../lib/interconnection.js";
 
 /**
  * Event handler for when the chat changes.
@@ -12,6 +13,7 @@ import { updateTrackerPreview, showTrackerUI } from "./trackerUI.js";
 function onChatChanged(args) {
 	$(document).off("mouseup touchend", "#show_more_messages", updateTrackerPreview);
 	if (!isEnabled()) return;
+	releaseGeneration();
 	log("Chat changed:", args);
 	if ($("#trackerUI").length > 0) {
 		showTrackerUI();
@@ -30,6 +32,7 @@ async function onGenerateAfterCommands(type, options, dryRun) {
 	if (!isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate"].includes(type))) return;
 	log("GENERATION_AFTER_COMMANDS ", [type, options, dryRun]);
 	await prepareMessageGeneration(type, options, dryRun);
+	releaseGeneration();
 }
 
 /**
@@ -40,6 +43,7 @@ async function onMessageReceived(mesId) {
 	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("MESSAGE_RECEIVED", mesId);
 	await addTrackerToMessage(mesId);
+	releaseGeneration();
 }
 
 /**
@@ -50,6 +54,7 @@ async function onMessageSent(mesId) {
 	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("MESSAGE_SENT", mesId);
 	await addTrackerToMessage(mesId);
+	releaseGeneration();
 }
 
 /**
@@ -59,6 +64,7 @@ async function onCharacterMessageRendered(mesId) {
 	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("CHARACTER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
+	releaseGeneration();
 	updateTrackerPreview();
 }
 
@@ -69,6 +75,7 @@ async function onUserMessageRendered(mesId) {
 	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("USER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
+	releaseGeneration();
 	updateTrackerPreview();
 }
 
