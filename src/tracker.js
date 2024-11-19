@@ -133,6 +133,7 @@ export async function prepareMessageGeneration(type, options, dryRun) {
 
 export async function addTrackerToMessage(mesId) {
 	if(chat[mesId].is_thoughts) return;
+	if(mesId == 0) return;
 	const manageStopButton = $("#mes_stop").css("display") == "none";
 	if (manageStopButton) deactivateSendButtons();
 
