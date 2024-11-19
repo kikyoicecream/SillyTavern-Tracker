@@ -1,7 +1,7 @@
 import { saveChatConditional, generateRaw, chat, chat_metadata, characters, this_chid, getCharacterCardFields, name1, setExtensionPrompt, deactivateSendButtons, activateSendButtons, getBiasStrings, system_message_types, sendSystemMessage, sendMessageAsUser, removeMacros, stopGeneration } from "../../../../../script.js";
 import { groups, selected_group } from "../../../../../scripts/group-chats.js";
 import { hasPendingFileAttachment } from "../../../../../scripts/chats.js";
-import { log, warn, debug, getLastNonSystemMessageIndex } from "../lib/utils.js";
+import { log, warn, debug, error, getLastNonSystemMessageIndex } from "../lib/utils.js";
 import { yamlToJSON, jsonToYAML } from "../lib/ymlParser.js";
 import { extensionSettings } from "../index.js";
 import { updateTrackerPreview } from "./trackerUI.js";
@@ -52,8 +52,8 @@ export async function generateTracker(mesNum) {
 		const trackerContent = tracker.match(/<tracker>([\s\S]*?)<\/tracker>/);
 		const result = trackerContent ? trackerContent[1].trim() : null;
 		newTracker = JSON.parse(yamlToJSON(result));
-	} catch (error) {
-		error("Failed to parse tracker:", tracker, error);
+	} catch (e) {
+		error("Failed to parse tracker:", tracker, e);
 	}
 
 	debug("Parsed tracker:", { newTracker });
