@@ -12,7 +12,7 @@ import { releaseGeneration } from "../lib/interconnection.js";
  */
 async function onChatChanged(args) {
 	$(document).off("mouseup touchend", "#show_more_messages", updateTrackerPreview);
-	if (!isEnabled()) return;
+	if (!await isEnabled()) return;
 	releaseGeneration();
 	log("Chat changed:", args);
 	if ($("#trackerUI").length > 0) {
@@ -29,7 +29,7 @@ async function onChatChanged(args) {
  * @param {boolean} dryRun - Whether it's a dry run.
  */
 async function onGenerateAfterCommands(type, options, dryRun) {
-	if (!isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate"].includes(type))) return;
+	if (!await isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate"].includes(type))) return;
 	log("GENERATION_AFTER_COMMANDS ", [type, options, dryRun]);
 	await prepareMessageGeneration(type, options, dryRun);
 	releaseGeneration();
@@ -40,7 +40,7 @@ async function onGenerateAfterCommands(type, options, dryRun) {
  * @param {number} mesId - The message ID.
  */
 async function onMessageReceived(mesId) {
-	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("MESSAGE_RECEIVED", mesId);
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
@@ -51,7 +51,7 @@ async function onMessageReceived(mesId) {
  * @param {number} mesId - The message ID.
  */
 async function onMessageSent(mesId) {
-	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("MESSAGE_SENT", mesId);
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
@@ -61,7 +61,7 @@ async function onMessageSent(mesId) {
  * Event handler for when a character's message is rendered.
  */
 async function onCharacterMessageRendered(mesId) {
-	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("CHARACTER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
@@ -72,7 +72,7 @@ async function onCharacterMessageRendered(mesId) {
  * Event handler for when a user's message is rendered.
  */
 async function onUserMessageRendered(mesId) {
-	if (!isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
 	log("USER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
