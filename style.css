@@ -228,3 +228,7 @@
   max-height: 80vh;
   overflow-y: scroll;
 }
+
+.tracker-preset-buttons {
+  display: flex;
+}
