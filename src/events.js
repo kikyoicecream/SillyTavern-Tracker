@@ -1,25 +1,24 @@
 import { chat } from "../../../../../script.js";
 import { is_group_generating } from "../../../../../scripts/group-chats.js";
-import { log } from "../lib/utils.js";
+import { getLastNonSystemMessageIndex, log } from "../lib/utils.js";
 import { isEnabled } from "./settings/settings.js";
-import { prepareMessageGeneration, addTrackerToMessage } from "./tracker.js";
-import { updateTrackerPreview, showTrackerUI } from "./trackerUI.js";
+import { prepareMessageGeneration, addTrackerToMessage, clearInjects } from "./tracker.js";
 import { releaseGeneration } from "../lib/interconnection.js";
+import { FIELD_INCLUDE_OPTIONS, getTracker, OUTPUT_FORMATS, saveTracker } from "./trackerDataHandler.js";
+import { TrackerInterface } from "./ui/trackerInterface.js";
+import { extensionSettings } from "../index.js";
+import { TrackerPreviewManager } from "./ui/trackerPreviewManager.js";
 
 /**
  * Event handler for when the chat changes.
  * @param {object} args - The event arguments.
  */
 async function onChatChanged(args) {
-	$(document).off("mouseup touchend", "#show_more_messages", updateTrackerPreview);
 	if (!await isEnabled()) return;
-	releaseGeneration();
 	log("Chat changed:", args);
-	if ($("#trackerUI").length > 0) {
-		showTrackerUI();
-	}
-	updateTrackerPreview(true);
-	$(document).on("mouseup touchend", "#show_more_messages", updateTrackerPreview);
+	updateTrackerUI();
+	//TrackerPreviewManager.init();
+	releaseGeneration();
 }
 
 /**
@@ -29,6 +28,7 @@ async function onChatChanged(args) {
  * @param {boolean} dryRun - Whether it's a dry run.
  */
 async function onGenerateAfterCommands(type, options, dryRun) {
+	await clearInjects();
 	if (!await isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate"].includes(type))) return;
 	log("GENERATION_AFTER_COMMANDS ", [type, options, dryRun]);
 	await prepareMessageGeneration(type, options, dryRun);
@@ -65,7 +65,7 @@ async function onCharacterMessageRendered(mesId) {
 	log("CHARACTER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
-	updateTrackerPreview();
+	updateTrackerUI();
 }
 
 /**
@@ -76,7 +76,7 @@ async function onUserMessageRendered(mesId) {
 	log("USER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
-	updateTrackerPreview();
+	updateTrackerUI();
 }
 
 export const eventHandlers = {
@@ -87,3 +87,14 @@ export const eventHandlers = {
 	onCharacterMessageRendered,
 	onUserMessageRendered,
 };
+
+function updateTrackerUI() {
+	const lastMesId = getLastNonSystemMessageIndex();
+	const tracker = chat[lastMesId]?.tracker ?? {};
+	const trackerData = getTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.JSON); // Get tracker data for the last message
+	const onSave = (updatedTracker) => {
+		saveTracker(updatedTracker, extensionSettings.trackerDef, lastMesId);
+	};
+	const trackerInterface = new TrackerInterface();
+	trackerInterface.init(trackerData, lastMesId, onSave);
+}

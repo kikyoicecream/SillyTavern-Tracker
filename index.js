@@ -8,10 +8,11 @@ import { horde_settings } from "../../../../scripts/horde.js";
 import { kai_settings } from "../../../../scripts/kai-settings.js";
 
 import { initSettings } from "./src/settings/settings.js";
-import { initTrackerUI } from "./src/trackerUI.js";
 import { eventHandlers } from "./src/events.js";
 
 import { registerGenerationMutexListeners } from './lib/interconnection.js';
+import { TrackerInterface } from "./src/ui/trackerInterface.js";
+import { TrackerPreviewManager } from "./src/ui/trackerPreviewManager.js";
 
 export const extensionName = "Tracker";
 const extensionNameLong = `SillyTavern-${extensionName}`;
@@ -22,7 +23,8 @@ export const extensionSettings = extension_settings[extensionName.toLowerCase()]
 
 jQuery(async () => {
 	await initSettings();
-	await initTrackerUI();
+	await TrackerInterface.initializeTrackerButtons();
+	TrackerPreviewManager.init();
 });
 
 registerGenerationMutexListeners();
@@ -31,5 +33,3 @@ eventSource.on(event_types.CHAT_CHANGED, eventHandlers.onChatChanged);
 eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, eventHandlers.onCharacterMessageRendered);
 eventSource.on(event_types.USER_MESSAGE_RENDERED, eventHandlers.onUserMessageRendered);
 eventSource.on(event_types.GENERATION_AFTER_COMMANDS, eventHandlers.onGenerateAfterCommands);
-//eventSource.on(event_types.MESSAGE_RECEIVED, eventHandlers.onMessageReceived);
-//eventSource.on(event_types.MESSAGE_SENT, eventHandlers.onMessageSent);

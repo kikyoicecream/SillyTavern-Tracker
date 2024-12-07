@@ -1,138 +1,49 @@
-#trackerUI {
+#trackerInterface {
 	top: unset;
 	flex-direction: column;
 	padding: 10px;
 	gap: 10px;
-}
-
-#trackerUIHeader {
-	font-size: 17.55px;
-	font-weight: 700;
-}
-
-#trackerUIContents {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	gap: 5px;
-
-	.tracker-field-textarea {
-		resize: none;
+	#trackerUIHeader {
+		font-size: 17.55px;
+		font-weight: 700;
 	}
 
-	.tracker-field-wrapper {
-		label {
-			padding-right: 10px;
-			line-height: 30px;
-		}
+	#trackerUIContents {
+		.tracker-editor-container,
+		.tracker-view-container {
+			.tracker-editor-field,
+			.tracker-view-field {
+				width: 100%;
 
-		.tracker-object-label {
-			font-weight: bold;
-		}
-	}
+				.tracker-editor-label,
+				.tracker-view-label {
+					font-weight: bold;
+				}
 
-	.tracker-object-wrapper,
-	.tracker-view-object-wrapper {
-		display: flex !important;
-		flex-direction: column !important;
-		gap: 5px !important;
+				.tracker-editor-list-item,
+				.tracker-editor-nested,
+				.tracker-view-nested {
+					padding-left: 20px;
+				}
+			}
 
-		&::before,
-		&::after {
-			content: "";
-		}
-
-		&:not(:first-child) {
-			&::before,
-			&::after {
-				content: "";
-				background-image: linear-gradient(90deg, var(--transparent), var(--SmartThemeBodyColor), var(--transparent));
-				height: 1px;
-				min-height: 1px;
-				border: 0;
-				opacity: 0.2;
+			.menu_button {
+				white-space: nowrap;
 			}
 		}
-
-		.tracker-object-container,
-		.tracker-view-object-container {
-			padding-left: 20px;
-		}
 	}
 
-	> .tracker-object-wrapper,
-	> .tracker-view-object-wrapper {
-		gap: 0px !important;
-	}
-
-	.tracker-array-container,
-	.tracker-object-container,
-	.tracker-view-object-container {
-		width: 100%;
+	#trackerUIFooter {
 		display: flex;
-		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 		flex-wrap: nowrap;
-		gap: 5px;
+		gap: 10px;
 
 		button {
-			margin-left: auto;
+			width: fit-content;
 		}
 	}
-
-	.tracker-array-container {
-		gap: 10px;
-	}
-
-	.tracker-remove-button {
-		width: 26px;
-		height: 26px;
-	}
-
-	.tracker-input-container {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 10px;
-	}
-
-	.tracker-view-field-wrapper {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 10px;
-
-		.tracker-view-field-label {
-			font-weight: bold;
-			width: 80px;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			flex-shrink: 0;
-		}
-	}
-
-	.tracker-view-object-wrapper {
-		> .tracker-view-field-label {
-			width: 100%;
-		}
-	}
-}
-
-#trackerUIFooter {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-wrap: nowrap;
-	gap: 10px;
-
-	button {
-		width: fit-content;
-	}
-}
-
-#chat .mes[is_thoughts="true"] .mes_tracker_button {
-	display: none;
 }
 
 .mes_tracker {
@@ -162,5 +73,177 @@
 				padding-left: 20px;
 			}
 		}
+	}
+}
+
+.tracker-prompt-maker {
+	text-align: left;
+
+	> .fields-container {
+		max-height: 80vh;
+		overflow-y: scroll;
+
+		> .field-wrapper {
+			background-color: rgba(125, 125, 125, 0.3);
+		}
+	}
+
+	.field-wrapper {
+		border: 1px solid var(--SmartThemeBorderColor);
+		border-radius: 10px;
+		padding: 10px;
+		margin-bottom: 10px;
+		background-color: var(--black30a);
+
+		.name-dynamic-type-wrapper {
+			display: flex;
+			flex-wrap: nowrap;
+			gap: 10px;
+
+			.field-name-wrapper {
+				flex-grow: 1;
+			}
+
+			.field-name-wrapper,
+			.field-type-wrapper,
+			.static-dynamic-wrapper {
+				display: flex;
+				flex-wrap: nowrap;
+				gap: 5px;
+				flex-shrink: 0;
+				align-items: center;
+
+				label {
+					white-space: nowrap;
+					overflow: hidden;
+					flex-shrink: 0;
+				}
+			}
+		}
+
+		.prompt-default-example-wrapper {
+			display: flex;
+			flex-wrap: nowrap;
+			gap: 5px;
+
+			.prompt-wrapper,
+			.default-example-wrapper {
+				width: 100%;
+			}
+
+			.prompt-wrapper {
+				width: 100%;
+
+				textarea {
+					height: calc(100% - 30px);
+				}
+			}
+
+			.default-value-wrapper {
+				display: flex;
+				flex-wrap: nowrap;
+				gap: 5px;
+				flex-shrink: 0;
+				align-items: center;
+
+				label {
+					white-space: nowrap;
+					overflow: hidden;
+					flex-shrink: 0;
+				}
+			}
+		}
+
+		.buttons-wrapper {
+			button {
+				margin: 0;
+			}
+		}
+	}
+
+	.buttons-wrapper {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 5px;
+		justify-content: center;
+
+		button {
+			white-space: nowrap;
+			background-color: var(--black30a);
+
+			&:hover {
+				background-color: var(--white30a);
+			}
+		}
+	}
+}
+
+.tracker-modal-control-bar {
+	position: absolute;
+	width: 100%;
+	right: 0;
+	padding: 6px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 5px;
+
+	#TrackerPromptModalClose {
+		height: 15px;
+		aspect-ratio: 1 / 1;
+		font-size: calc(var(--mainFontSize) * 1.3);
+		opacity: 0.5;
+		transition: all 250ms;
+		filter: drop-shadow(0px 0px 2px black);
+		text-shadow: none;
+		transition: opacity 200ms;
+
+		&:hover {
+			opacity: 1 !important;
+			cursor: pointer;
+		}
+	}
+}
+
+.tracker-object-editor .field-wrapper,
+.tracker-object-editor .object-wrapper,
+.tracker-object-editor .array-wrapper {
+	border: 1px solid #ccc;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+.tracker-prompt-maker input,
+.tracker-prompt-maker select,
+.tracker-object-editor input {
+	margin-bottom: 5px;
+}
+
+.tracker-prompt-maker input:not([type="checkbox"]):not([type="radio"]),
+.tracker-prompt-maker select,
+.tracker-object-editor input:not([type="checkbox"]):not([type="radio"]) {
+	display: block;
+	width: 100%;
+}
+
+.tracker-prompt-maker .nested-fields-container,
+.tracker-object-editor .nested-container {
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
+.tracker-object-editor button {
+	margin-right: 5px;
+}
+
+.tracker-object-editor {
+	max-height: 80vh;
+	overflow-y: scroll;
+}
+
+.tracker-modal-content {
+	.tracker-editor-container {
+		max-height: 80vh;
+		overflow-y: scroll;
 	}
 }

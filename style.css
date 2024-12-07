@@ -1,122 +1,57 @@
-#trackerUI {
+#trackerInterface {
   top: unset;
   flex-direction: column;
   padding: 10px;
   gap: 10px;
 }
-
-#trackerUIHeader {
+#trackerInterface #trackerUIHeader {
   font-size: 17.55px;
   font-weight: 700;
 }
-
-#trackerUIContents {
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  gap: 5px;
 }
-#trackerUIContents .tracker-field-textarea {
-  resize: none;
-}
-#trackerUIContents .tracker-field-wrapper label {
-  padding-right: 10px;
-  line-height: 30px;
-}
-#trackerUIContents .tracker-field-wrapper .tracker-object-label {
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-editor-label,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-view-label,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-editor-label,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-view-label,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-editor-label,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-view-label,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-editor-label,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-view-label {
   font-weight: bold;
 }
-#trackerUIContents .tracker-object-wrapper,
-#trackerUIContents .tracker-view-object-wrapper {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 5px !important;
-}
-#trackerUIContents .tracker-object-wrapper::before, #trackerUIContents .tracker-object-wrapper::after,
-#trackerUIContents .tracker-view-object-wrapper::before,
-#trackerUIContents .tracker-view-object-wrapper::after {
-  content: "";
-}
-#trackerUIContents .tracker-object-wrapper:not(:first-child)::before, #trackerUIContents .tracker-object-wrapper:not(:first-child)::after,
-#trackerUIContents .tracker-view-object-wrapper:not(:first-child)::before,
-#trackerUIContents .tracker-view-object-wrapper:not(:first-child)::after {
-  content: "";
-  background-image: linear-gradient(90deg, var(--transparent), var(--SmartThemeBodyColor), var(--transparent));
-  height: 1px;
-  min-height: 1px;
-  border: 0;
-  opacity: 0.2;
-}
-#trackerUIContents .tracker-object-wrapper .tracker-object-container,
-#trackerUIContents .tracker-object-wrapper .tracker-view-object-container,
-#trackerUIContents .tracker-view-object-wrapper .tracker-object-container,
-#trackerUIContents .tracker-view-object-wrapper .tracker-view-object-container {
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-editor-list-item,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-editor-nested,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-view-nested,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-editor-list-item,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-editor-nested,
+#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-view-nested,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-editor-list-item,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-editor-nested,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-view-nested,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-editor-list-item,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-editor-nested,
+#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-view-nested {
   padding-left: 20px;
 }
-#trackerUIContents > .tracker-object-wrapper,
-#trackerUIContents > .tracker-view-object-wrapper {
-  gap: 0px !important;
-}
-#trackerUIContents .tracker-array-container,
-#trackerUIContents .tracker-object-container,
-#trackerUIContents .tracker-view-object-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  gap: 5px;
-}
-#trackerUIContents .tracker-array-container button,
-#trackerUIContents .tracker-object-container button,
-#trackerUIContents .tracker-view-object-container button {
-  margin-left: auto;
-}
-#trackerUIContents .tracker-array-container {
-  gap: 10px;
-}
-#trackerUIContents .tracker-remove-button {
-  width: 26px;
-  height: 26px;
-}
-#trackerUIContents .tracker-input-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 10px;
-}
-#trackerUIContents .tracker-view-field-wrapper {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 10px;
-}
-#trackerUIContents .tracker-view-field-wrapper .tracker-view-field-label {
-  font-weight: bold;
-  width: 80px;
-  overflow: hidden;
+#trackerInterface #trackerUIContents .tracker-editor-container .menu_button,
+#trackerInterface #trackerUIContents .tracker-view-container .menu_button {
   white-space: nowrap;
-  text-overflow: ellipsis;
-  flex-shrink: 0;
 }
-#trackerUIContents .tracker-view-object-wrapper > .tracker-view-field-label {
-  width: 100%;
-}
-
-#trackerUIFooter {
+#trackerInterface #trackerUIFooter {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
   gap: 10px;
 }
-#trackerUIFooter button {
+#trackerInterface #trackerUIFooter button {
   width: -moz-fit-content;
   width: fit-content;
-}
-
-#chat .mes[is_thoughts=true] .mes_tracker_button {
-  display: none;
 }
 
 .mes_tracker .tracker_default_mes_template {
@@ -141,4 +76,155 @@
 .mes_tracker .tracker_default_mes_template details table,
 .mes_tracker .tracker_default_mes_template details .mes_tracker_characters {
   padding-left: 20px;
+}
+
+.tracker-prompt-maker {
+  text-align: left;
+}
+.tracker-prompt-maker > .fields-container {
+  max-height: 80vh;
+  overflow-y: scroll;
+}
+.tracker-prompt-maker > .fields-container > .field-wrapper {
+  background-color: rgba(125, 125, 125, 0.3);
+}
+.tracker-prompt-maker .field-wrapper {
+  border: 1px solid var(--SmartThemeBorderColor);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--black30a);
+}
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper {
+  flex-grow: 1;
+}
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper,
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-type-wrapper,
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .static-dynamic-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  flex-shrink: 0;
+  align-items: center;
+}
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper label,
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-type-wrapper label,
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .static-dynamic-wrapper label {
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper .prompt-wrapper,
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper .default-example-wrapper {
+  width: 100%;
+}
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper .prompt-wrapper {
+  width: 100%;
+}
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper .prompt-wrapper textarea {
+  height: calc(100% - 30px);
+}
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper .default-value-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  flex-shrink: 0;
+  align-items: center;
+}
+.tracker-prompt-maker .field-wrapper .prompt-default-example-wrapper .default-value-wrapper label {
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.tracker-prompt-maker .field-wrapper .buttons-wrapper button {
+  margin: 0;
+}
+.tracker-prompt-maker .buttons-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  justify-content: center;
+}
+.tracker-prompt-maker .buttons-wrapper button {
+  white-space: nowrap;
+  background-color: var(--black30a);
+}
+.tracker-prompt-maker .buttons-wrapper button:hover {
+  background-color: var(--white30a);
+}
+
+.tracker-modal-control-bar {
+  position: absolute;
+  width: 100%;
+  right: 0;
+  padding: 6px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+}
+.tracker-modal-control-bar #TrackerPromptModalClose {
+  height: 15px;
+  aspect-ratio: 1/1;
+  font-size: calc(var(--mainFontSize) * 1.3);
+  opacity: 0.5;
+  transition: all 250ms;
+  filter: drop-shadow(0px 0px 2px black);
+  text-shadow: none;
+  transition: opacity 200ms;
+}
+.tracker-modal-control-bar #TrackerPromptModalClose:hover {
+  opacity: 1 !important;
+  cursor: pointer;
+}
+
+.tracker-object-editor .field-wrapper,
+.tracker-object-editor .object-wrapper,
+.tracker-object-editor .array-wrapper {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.tracker-prompt-maker input,
+.tracker-prompt-maker select,
+.tracker-object-editor input {
+  margin-bottom: 5px;
+}
+
+.tracker-prompt-maker input:not([type=checkbox]):not([type=radio]),
+.tracker-prompt-maker select,
+.tracker-object-editor input:not([type=checkbox]):not([type=radio]) {
+  display: block;
+  width: 100%;
+}
+
+.tracker-prompt-maker .nested-fields-container,
+.tracker-object-editor .nested-container {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.tracker-object-editor button {
+  margin-right: 5px;
+}
+
+.tracker-object-editor {
+  max-height: 80vh;
+  overflow-y: scroll;
+}
+
+.tracker-modal-content .tracker-editor-container {
+  max-height: 80vh;
+  overflow-y: scroll;
 }
