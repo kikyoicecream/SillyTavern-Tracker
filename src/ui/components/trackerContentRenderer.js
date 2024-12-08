@@ -119,7 +119,7 @@ export class TrackerContentRenderer {
 
 				switch (fieldType) {
 					case this.FIELD_TYPES.ARRAY: {
-						const arrayValue = value || [];
+						const arrayValue = value && Array.isArray(value) ? value : [];
 						object[fieldSchema.name] = arrayValue;
 
 						const listContainer = document.createElement("div");
