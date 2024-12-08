@@ -302,7 +302,12 @@ function handleArray(field, includeFields, index = null, trackerValue = null, ex
 			value = field.exampleValues[index];
 		}
 	} else {
-		value = field.defaultValue || [];
+        try {
+            const parsedValue = JSON.parse(field.defaultValue);
+            value = Array.isArray(parsedValue) ? parsedValue : [parsedValue];
+        } catch {
+            value = field.defaultValue ? [field.defaultValue] : [];
+        }
 	}
 	return value;
 }
