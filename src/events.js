@@ -91,6 +91,7 @@ export const eventHandlers = {
 function updateTrackerUI() {
 	const lastMesId = getLastNonSystemMessageIndex();
 	const tracker = chat[lastMesId]?.tracker ?? {};
+	if(Object.keys(tracker).length === 0) return;
 	const trackerData = getTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.JSON); // Get tracker data for the last message
 	const onSave = (updatedTracker) => {
 		saveTracker(updatedTracker, extensionSettings.trackerDef, lastMesId);
