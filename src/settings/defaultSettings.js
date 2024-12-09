@@ -98,9 +98,9 @@ const twoStageGenerateRequestPrompt = `[Use the provided changes list below to u
 
 Ensure the response remains consistent, strictly follows this structure in {{trackerFormat}}, and omits any extra data or deviations. You MUST enclose the tracker in <tracker></tracker> tags.]`;
 
-const messageSummerizationContextTemplate = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+const messageSummarizationContextTemplate = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
-{{messageSummerizationSystemPrompt}}
+{{messageSummarizationSystemPrompt}}
 
 <!-- Start of Context -->
 
@@ -117,7 +117,7 @@ const messageSummerizationContextTemplate = `<|begin_of_text|><|start_header_id|
 
 <!-- End of Context -->
 <|eot_id|>`;
-const messageSummerizationSystemPrompt = `You are a Scene Change Detector. Your task is to analyze the latest message and identify all relevant changes or updates for a scene tracker.
+const messageSummarizationSystemPrompt = `You are a Scene Change Detector. Your task is to analyze the latest message and identify all relevant changes or updates for a scene tracker.
 
 ### Instructions:
 1. **Detect Changes**:
@@ -145,7 +145,7 @@ const messageSummerizationSystemPrompt = `You are a Scene Change Detector. Your 
    \`\`\`
 
 Your goal is to provide a concise and accurate list of changes that will inform updates to the scene tracker.`;
-const messageSummerizationRequestPrompt = `Analyze the most recent message provided below and compare it to the recent context and tracker to identify changes. Your response must follow the rules provided and use the specified **markdown list** format.
+const messageSummarizationRequestPrompt = `Analyze the most recent message provided below and compare it to the recent context and tracker to identify changes. Your response must follow the rules provided and use the specified **markdown list** format.
 
 ### Recent Message:
 {{message}}
@@ -164,7 +164,7 @@ const messageSummerizationRequestPrompt = `Analyze the most recent message provi
 \`\`\`
 
 Provide only the list of changes as your response.`;
-const messageSummerizationRecentMessagesTemplate = `{{char}}: {{message}}`;
+const messageSummarizationRecentMessagesTemplate = `{{char}}: {{message}}`;
 
 //#endregion
 
@@ -487,10 +487,10 @@ export const defaultSettings = {
 	generateRequestPrompt: generateRequestPrompt,
 	generateRecentMessagesTemplate: generateRecentMessagesTemplate,
 
-	messageSummerizationContextTemplate: "",
-	messageSummerizationSystemPrompt: "",
-	messageSummerizationRequestPrompt: "",
-	messageSummerizationRecentMessagesTemplate: "",
+	messageSummarizationContextTemplate: "",
+	messageSummarizationSystemPrompt: "",
+	messageSummarizationRequestPrompt: "",
+	messageSummarizationRecentMessagesTemplate: "",
 
 	inlineRequestPrompt: "",
 
@@ -515,9 +515,9 @@ export const defaultSettings = {
 			generateRequestPrompt: generateRequestPrompt,
 			generateRecentMessagesTemplate: generateRecentMessagesTemplate,
 
-			messageSummerizationContextTemplate: "",
-			messageSummerizationSystemPrompt: "",
-			messageSummerizationRequestPrompt: "",
+			messageSummarizationContextTemplate: "",
+			messageSummarizationSystemPrompt: "",
+			messageSummarizationRequestPrompt: "",
 
 			inlineRequestPrompt: "",
 
@@ -534,10 +534,10 @@ export const defaultSettings = {
 			generateRequestPrompt: twoStageGenerateRequestPrompt,
 			generateRecentMessagesTemplate: generateRecentMessagesTemplate,
 
-			messageSummerizationContextTemplate: messageSummerizationContextTemplate,
-			messageSummerizationSystemPrompt: messageSummerizationSystemPrompt,
-			messageSummerizationRequestPrompt: messageSummerizationRequestPrompt,
-			messageSummerizationRecentMessagesTemplate: messageSummerizationRecentMessagesTemplate,
+			messageSummarizationContextTemplate: messageSummarizationContextTemplate,
+			messageSummarizationSystemPrompt: messageSummarizationSystemPrompt,
+			messageSummarizationRequestPrompt: messageSummarizationRequestPrompt,
+			messageSummarizationRecentMessagesTemplate: messageSummarizationRecentMessagesTemplate,
 
 			inlineRequestPrompt: "",
 
@@ -554,9 +554,9 @@ export const defaultSettings = {
 			generateRequestPrompt: generateRequestPrompt,
 			generateRecentMessagesTemplate: generateRecentMessagesTemplate,
 
-			messageSummerizationContextTemplate: "",
-			messageSummerizationSystemPrompt: "",
-			messageSummerizationRequestPrompt: "",
+			messageSummarizationContextTemplate: "",
+			messageSummarizationSystemPrompt: "",
+			messageSummarizationRequestPrompt: "",
 
 			inlineRequestPrompt: inlineRequestPrompt,
 

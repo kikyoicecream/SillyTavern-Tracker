@@ -86,8 +86,8 @@ async function generateSingleStageTracker(mesNum, includedFields, firstStageMess
  */
 async function generateTwoStageTracker(mesNum, includedFields) {
 	// Build system and request prompts for message summarization
-	const systemPrompt = getMessageSummerizationSystemPrompt(mesNum, includedFields);
-	const requestPrompt = getRequestPrompt(extensionSettings.messageSummerizationRequestPrompt, mesNum, includedFields);
+	const systemPrompt = getMessageSummarizationSystemPrompt(mesNum, includedFields);
+	const requestPrompt = getRequestPrompt(extensionSettings.messageSummarizationRequestPrompt, mesNum, includedFields);
 
 	let responseLength = extensionSettings.responseLength > 0 ? extensionSettings.responseLength : null;
 
@@ -159,25 +159,25 @@ function getGenerateSystemPrompt(mesNum, includedFields = FIELD_INCLUDE_OPTIONS.
 }
 
 /**
- * Constructs the message summarization system prompt for the AI model in two-stage mode. {{trackerSystemPrompt}}, {{characterDescriptions}}, {{trackerExamples}}, {{recentMessages}}, {{currentTracker}}, {{trackerFormat}}, {{trackerFieldPrompt}}, {{messageSummerizationSystemPrompt}}
- * Uses `extensionSettings.messageSummerizationContextTemplate` and `extensionSettings.messageSummerizationSystemPrompt`.
+ * Constructs the message summarization system prompt for the AI model in two-stage mode. {{trackerSystemPrompt}}, {{characterDescriptions}}, {{trackerExamples}}, {{recentMessages}}, {{currentTracker}}, {{trackerFormat}}, {{trackerFieldPrompt}}, {{messageSummarizationSystemPrompt}}
+ * Uses `extensionSettings.messageSummarizationContextTemplate` and `extensionSettings.messageSummarizationSystemPrompt`.
  * @param {number} mesNum
  * @param {string} includedFields
  * @returns {string} The system prompt.
  */
-function getMessageSummerizationSystemPrompt(mesNum, includedFields) {
-	const trackerSystemPrompt = getSystemPrompt(extensionSettings.messageSummerizationSystemPrompt, includedFields);
-	const messageSummerizationSystemPrompt = getSystemPrompt(extensionSettings.messageSummerizationSystemPrompt, includedFields);
+function getMessageSummarizationSystemPrompt(mesNum, includedFields) {
+	const trackerSystemPrompt = getSystemPrompt(extensionSettings.messageSummarizationSystemPrompt, includedFields);
+	const messageSummarizationSystemPrompt = getSystemPrompt(extensionSettings.messageSummarizationSystemPrompt, includedFields);
 	const characterDescriptions = getCharacterDescriptions();
 	const trackerExamples = getExampleTrackers(includedFields);
-	const recentMessages = extensionSettings.messageSummerizationRecentMessagesTemplate ? getRecentMessages(extensionSettings.messageSummerizationRecentMessagesTemplate, mesNum, includedFields) || "" : "";
+	const recentMessages = extensionSettings.messageSummarizationRecentMessagesTemplate ? getRecentMessages(extensionSettings.messageSummarizationRecentMessagesTemplate, mesNum, includedFields) || "" : "";
 	const currentTracker = getCurrentTracker(mesNum, includedFields);
 	const trackerFormat = extensionSettings.trackerFormat;
 	const trackerFieldPrompt = getTrackerPrompt(extensionSettings.trackerDef, includedFields);
 
 	const vars = {
 		trackerSystemPrompt,
-		messageSummerizationSystemPrompt,
+		messageSummarizationSystemPrompt,
 		characterDescriptions,
 		trackerExamples,
 		recentMessages,
@@ -186,8 +186,8 @@ function getMessageSummerizationSystemPrompt(mesNum, includedFields) {
 		trackerFieldPrompt,
 	};
 
-	debug("Generated Message Summerization System Prompt (Summarization):", vars);
-	return formatTemplate(extensionSettings.messageSummerizationContextTemplate, vars);
+	debug("Generated Message Summarization System Prompt (Summarization):", vars);
+	return formatTemplate(extensionSettings.messageSummarizationContextTemplate, vars);
 }
 
 /**

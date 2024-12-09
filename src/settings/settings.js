@@ -70,6 +70,7 @@ async function loadSettingsUI() {
 function setSettingsInitialValues() {
 	// Populate presets dropdown
 	updatePresetDropdown();
+	updateFieldVisibility(extensionSettings.generationMode)
 
 	$("#tracker_enable").prop("checked", extensionSettings.enabled);
 	$("#tracker_generation_mode").val(extensionSettings.generationMode);
@@ -86,7 +87,7 @@ function setSettingsInitialValues() {
 	$("#tracker_message_summarization_context_template").val(extensionSettings.messageSummarizationContextTemplate);
 	$("#tracker_message_summarization_system_prompt").val(extensionSettings.messageSummarizationSystemPrompt);
 	$("#tracker_message_summarization_request_prompt").val(extensionSettings.messageSummarizationRequestPrompt);
-	$("#tracker_message_summarization_recent_messages").val(extensionSettings.messageSummerizationRecentMessagesTemplate);
+	$("#tracker_message_summarization_recent_messages").val(extensionSettings.messageSummarizationRecentMessagesTemplate);
 	$("#tracker_character_description").val(extensionSettings.characterDescriptionTemplate);
 	$("#tracker_mes_tracker_template").val(extensionSettings.mesTrackerTemplate);
 	$("#tracker_number_of_messages").val(extensionSettings.numberOfMessages);
@@ -126,7 +127,7 @@ function registerSettingsListeners() {
 	$("#tracker_message_summarization_context_template").on("input", onSettingInputareaInput("messageSummarizationContextTemplate"));
 	$("#tracker_message_summarization_system_prompt").on("input", onSettingInputareaInput("messageSummarizationSystemPrompt"));
 	$("#tracker_message_summarization_request_prompt").on("input", onSettingInputareaInput("messageSummarizationRequestPrompt"));
-	$("#tracker_message_summarization_recent_messages").on("input", onSettingInputareaInput("messageSummerizationRecentMessagesTemplate"));
+	$("#tracker_message_summarization_recent_messages").on("input", onSettingInputareaInput("messageSummarizationRecentMessagesTemplate"));
 	$("#tracker_character_description").on("input", onSettingInputareaInput("characterDescriptionTemplate"));
 	$("#tracker_mes_tracker_template").on("input", onSettingInputareaInput("mesTrackerTemplate"));
 	$("#tracker_number_of_messages").on("input", onSettingNumberInput("numberOfMessages"));
@@ -165,6 +166,7 @@ function onPresetSelectChange() {
 
 	// Update settings with preset settings
 	Object.assign(extensionSettings, presetSettings);
+	debug("Selected preset:", {selectedPreset, presetSettings, extensionSettings});
 
 	setSettingsInitialValues();
 	saveSettingsDebounced();
@@ -283,7 +285,7 @@ function getCurrentPresetSettings() {
 		messageSummarizationContextTemplate: extensionSettings.messageSummarizationContextTemplate,
 		messageSummarizationSystemPrompt: extensionSettings.messageSummarizationSystemPrompt,
 		messageSummarizationRequestPrompt: extensionSettings.messageSummarizationRequestPrompt,
-		messageSummerizationRecentMessagesTemplate: extensionSettings.messageSummerizationRecentMessagesTemplate,
+		messageSummarizationRecentMessagesTemplate: extensionSettings.messageSummarizationRecentMessagesTemplate,
 		characterDescriptionTemplate: extensionSettings.characterDescriptionTemplate,
 		mesTrackerTemplate: extensionSettings.mesTrackerTemplate,
 		trackerDef: extensionSettings.trackerDef,
