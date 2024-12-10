@@ -1,5 +1,10 @@
 import { eventSource, event_types } from "../../../../script.js";
 import { extension_settings } from "../../../../../../scripts/extensions.js";
+import { SlashCommand } from "../../../slash-commands/SlashCommand.js";
+import { SlashCommandParser } from "../../../slash-commands/SlashCommandParser.js";
+import { ARGUMENT_TYPE, SlashCommandNamedArgument } from "../../../slash-commands/SlashCommandArgument.js";
+import { commonEnumProviders } from "../../../slash-commands/SlashCommandCommonEnumsProvider.js";
+import { SlashCommandEnumValue  } from "../../../slash-commands/SlashCommandEnumValue.js";
 
 import { textgenerationwebui_settings as textgen_settings, textgen_types } from "../../../../scripts/textgen-settings.js";
 import { oai_settings } from "../../../../scripts/openai.js";
@@ -13,6 +18,8 @@ import { eventHandlers } from "./src/events.js";
 import { registerGenerationMutexListeners } from './lib/interconnection.js';
 import { TrackerInterface } from "./src/ui/trackerInterface.js";
 import { TrackerPreviewManager } from "./src/ui/trackerPreviewManager.js";
+import { generateTrackerCommand } from "./src/commands.js";
+import { FIELD_INCLUDE_OPTIONS } from "./src/trackerDataHandler.js";
 
 export const extensionName = "Tracker";
 const extensionNameLong = `SillyTavern-${extensionName}`;
@@ -33,3 +40,66 @@ eventSource.on(event_types.CHAT_CHANGED, eventHandlers.onChatChanged);
 eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, eventHandlers.onCharacterMessageRendered);
 eventSource.on(event_types.USER_MESSAGE_RENDERED, eventHandlers.onUserMessageRendered);
 eventSource.on(event_types.GENERATION_AFTER_COMMANDS, eventHandlers.onGenerateAfterCommands);
+
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+	name: 'generate-tracker',
+	callback: generateTrackerCommand,
+	returns: 'The tracker JSON object.',
+	namedArgumentList: [
+		SlashCommandNamedArgument.fromProps({
+			name: 'message',
+			description: 'generate tracker for specific message',
+			typeList: [ARGUMENT_TYPE.NUMBER],
+			isRequired: false,
+			enumProvider: commonEnumProviders.messages(),
+		}),
+		SlashCommandNamedArgument.fromProps({
+			name: 'include',
+			description: 'which fields to include in the tracker generation',
+			typeList: [ARGUMENT_TYPE.string],
+			isRequired: false,
+			defaultValue: 'DYNAMIC',
+			enumProvider: ()=> Object.keys(FIELD_INCLUDE_OPTIONS).map(key=>new SlashCommandEnumValue(key.toLowerCase())),
+		}),
+	],
+	helpString: 'Generates a tracker for the given message. If no message is provided, the tracker will be generated for the last non-system message.',
+	aliases: ['gen-tracker'],
+}));
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+	name: 'tracker-override',
+	callback: generateTrackerCommand,
+	returns: 'The tracker JSON object.',
+	namedArgumentList: [
+		SlashCommandNamedArgument.fromProps({
+			name: 'tracker',
+			description: 'the tracker used to override',
+			typeList: [ARGUMENT_TYPE.STRING],
+			isRequired: true,
+		}),
+	],
+	helpString: 'Overrides the tracker used for the next generation with the provided tracker.',
+}));
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+	name: 'save-tracker',
+	callback: generateTrackerCommand,
+	returns: 'The tracker JSON object.',
+	namedArgumentList: [
+		SlashCommandNamedArgument.fromProps({
+			name: 'message',
+			description: 'message to add tracker to',
+			typeList: [ARGUMENT_TYPE.NUMBER],
+			isRequired: false,
+			enumProvider: commonEnumProviders.messages(),
+		}),
+		SlashCommandNamedArgument.fromProps({
+			name: 'tracker',
+			description: 'the tracker to save',
+			typeList: [ARGUMENT_TYPE.STRING],
+			isRequired: true,
+		}),
+	],
+	helpString: 'Saves tracker to message. If no message is provided, the tracker will be saved to the last non-system message.',
+}));

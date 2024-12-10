@@ -314,7 +314,10 @@ async function handleStagedGeneration(type, options, dryRun) {
 		position = 0;
 		tracker = lastMes.tracker;
 	} else {
-		if (shouldGenerateTracker(mesId + 1, type)) {
+		if(chat_metadata.tracker.cmdTrackerOverride) {
+			tracker = { ...chat_metadata.tracker.cmdTrackerOverride };
+			chat_metadata.tracker.cmdTrackerOverride = null;
+		} else if (shouldGenerateTracker(mesId + 1, type)) {
 			debug("Generating new tracker for message:", mesId);
 			tracker = await generateTracker(mesId, type);
 		} else if (shouldShowPopup(mesId + 1, type)) {
@@ -418,6 +421,7 @@ export async function addTrackerToMessage(mesId) {
 		chat[mesId].tracker = tracker;
 		chat_metadata.tracker.tempTrackerId = null;
 		chat_metadata.tracker.tempTracker = null;
+		chat_metadata.tracker.cmdTrackerOverride = null;
 		await saveChatConditional();
 		TrackerPreviewManager.updatePreview(mesId);
 
@@ -436,7 +440,9 @@ export async function addTrackerToMessage(mesId) {
 		return;
 	} else {
 		const tempId = chat_metadata.tracker.tempTrackerId;
-		if (tempId != null) {
+		if(chat_metadata.tracker.cmdTrackerOverride) {
+			saveTrackerToMessage(mesId, chat_metadata.tracker.cmdTrackerOverride);
+		} else if (tempId != null) {
 			debug("Checking for temp tracker match", { mesId, tempId });
 			const trackerMesId = isSystemMessage(tempId) ? getNextNonSystemMessageIndex(tempId) : tempId;
 			const tracker = chat_metadata.tracker.tempTracker;
