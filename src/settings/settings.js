@@ -106,6 +106,7 @@ function registerSettingsListeners() {
 	// Preset management
 	$("#tracker_preset_select").on("change", onPresetSelectChange);
 	$("#tracker_preset_new").on("click", onPresetNewClick);
+	$("#tracker_preset_save").on("click", onPresetSaveClick);
 	$("#tracker_preset_rename").on("click", onPresetRenameClick);
 	$("#tracker_preset_delete").on("click", onPresetDeleteClick);
 	$("#tracker_preset_export").on("click", onPresetExportClick);
@@ -186,6 +187,17 @@ function onPresetNewClick() {
 	} else if (extensionSettings.presets[presetName]) {
 		alert("A preset with that name already exists.");
 	}
+}
+
+/**
+ * Event handler for creating a new preset.
+ */
+function onPresetSaveClick() {
+	const presetName = extensionSettings.selectedPreset;
+	
+	const updatedPreset = getCurrentPresetSettings();
+	extensionSettings.presets[presetName] = updatedPreset;
+	saveSettingsDebounced();
 }
 
 /**
