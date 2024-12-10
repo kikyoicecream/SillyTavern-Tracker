@@ -4,7 +4,7 @@ import { log, warn, debug, error } from "../lib/utils.js";
 import { yamlToJSON } from "../lib/ymlParser.js";
 import { extensionSettings } from "../index.js";
 import { generationModes } from "./settings/settings.js";
-import { FIELD_INCLUDE_OPTIONS, getDefaultTracker, getExampleTrackers as getExampleTrackersFromDef, getTracker, getTrackerPrompt, OUTPUT_FORMATS } from "./trackerDataHandler.js";
+import { FIELD_INCLUDE_OPTIONS, getDefaultTracker, getExampleTrackers as getExampleTrackersFromDef, getTracker, getTrackerPrompt, OUTPUT_FORMATS, updateTracker } from "./trackerDataHandler.js";
 import { trackerFormat } from "./settings/defaultSettings.js";
 
 // #region Utility Functions
@@ -53,8 +53,16 @@ function conditionalSection(template, sectionName, condition, content) {
 export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPTIONS.DYNAMIC) {
 	if (mesNum == null || mesNum < 0 || chat[mesNum].extra?.isSmallSys) return null;
 
-	if (extensionSettings.generationMode == generationModes.TWO_STAGE) return await generateTwoStageTracker(mesNum, includedFields);
-	else return await generateSingleStageTracker(mesNum, includedFields);
+	let tracker;
+	if (extensionSettings.generationMode == generationModes.TWO_STAGE) tracker = await generateTwoStageTracker(mesNum, includedFields);
+	else tracker = await generateSingleStageTracker(mesNum, includedFields);
+
+	const lastMesWithTracker = chat
+		.slice(0, mesNum)
+		.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
+		.pop();
+	let lastTracker = lastMesWithTracker ? lastMesWithTracker.tracker : getDefaultTracker(extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
+	return updateTracker(lastTracker, tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON, true);
 }
 
 /**
