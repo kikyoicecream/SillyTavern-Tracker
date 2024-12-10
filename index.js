@@ -18,7 +18,7 @@ import { eventHandlers } from "./src/events.js";
 import { registerGenerationMutexListeners } from './lib/interconnection.js';
 import { TrackerInterface } from "./src/ui/trackerInterface.js";
 import { TrackerPreviewManager } from "./src/ui/trackerPreviewManager.js";
-import { generateTrackerCommand } from "./src/commands.js";
+import { generateTrackerCommand, saveTrackerToMessageCommand } from "./src/commands.js";
 import { FIELD_INCLUDE_OPTIONS } from "./src/trackerDataHandler.js";
 
 export const extensionName = "Tracker";
@@ -84,7 +84,7 @@ SlashCommandParser.addCommandObject(SlashCommand.fromProps({
 
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
 	name: 'save-tracker',
-	callback: generateTrackerCommand,
+	callback: saveTrackerToMessageCommand,
 	returns: 'The tracker JSON object.',
 	namedArgumentList: [
 		SlashCommandNamedArgument.fromProps({
