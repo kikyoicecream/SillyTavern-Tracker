@@ -478,6 +478,7 @@ const responseLength = 0;
 export const defaultSettings = {
 	enabled: true,
 	generationTarget: generationTargets.BOTH,
+	showPopupFor: generationTargets.NONE,
 	trackerFormat: trackerFormat.YAML,
 
 	generationMode: generationModes.SINGLE_STAGE,

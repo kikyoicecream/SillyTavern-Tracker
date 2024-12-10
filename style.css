@@ -8,40 +8,6 @@
   font-size: 17.55px;
   font-weight: 700;
 }
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field {
-  width: 100%;
-}
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-editor-label,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-view-label,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-editor-label,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-view-label,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-editor-label,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-view-label,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-editor-label,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-view-label {
-  font-weight: bold;
-}
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-editor-list-item,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-editor-nested,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-editor-field .tracker-view-nested,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-editor-list-item,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-editor-nested,
-#trackerInterface #trackerUIContents .tracker-editor-container .tracker-view-field .tracker-view-nested,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-editor-list-item,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-editor-nested,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-editor-field .tracker-view-nested,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-editor-list-item,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-editor-nested,
-#trackerInterface #trackerUIContents .tracker-view-container .tracker-view-field .tracker-view-nested {
-  padding-left: 20px;
-}
-#trackerInterface #trackerUIContents .tracker-editor-container .menu_button,
-#trackerInterface #trackerUIContents .tracker-view-container .menu_button {
-  white-space: nowrap;
-}
 #trackerInterface #trackerUIFooter {
   display: flex;
   justify-content: center;
@@ -52,6 +18,45 @@
 #trackerInterface #trackerUIFooter button {
   width: -moz-fit-content;
   width: fit-content;
+}
+
+.tracker-editor-container,
+.tracker-view-container {
+  text-align: start;
+}
+.tracker-editor-container .tracker-editor-field,
+.tracker-editor-container .tracker-view-field,
+.tracker-view-container .tracker-editor-field,
+.tracker-view-container .tracker-view-field {
+  width: 100%;
+}
+.tracker-editor-container .tracker-editor-field .tracker-editor-label,
+.tracker-editor-container .tracker-editor-field .tracker-view-label,
+.tracker-editor-container .tracker-view-field .tracker-editor-label,
+.tracker-editor-container .tracker-view-field .tracker-view-label,
+.tracker-view-container .tracker-editor-field .tracker-editor-label,
+.tracker-view-container .tracker-editor-field .tracker-view-label,
+.tracker-view-container .tracker-view-field .tracker-editor-label,
+.tracker-view-container .tracker-view-field .tracker-view-label {
+  font-weight: bold;
+}
+.tracker-editor-container .tracker-editor-field .tracker-editor-list-item,
+.tracker-editor-container .tracker-editor-field .tracker-editor-nested,
+.tracker-editor-container .tracker-editor-field .tracker-view-nested,
+.tracker-editor-container .tracker-view-field .tracker-editor-list-item,
+.tracker-editor-container .tracker-view-field .tracker-editor-nested,
+.tracker-editor-container .tracker-view-field .tracker-view-nested,
+.tracker-view-container .tracker-editor-field .tracker-editor-list-item,
+.tracker-view-container .tracker-editor-field .tracker-editor-nested,
+.tracker-view-container .tracker-editor-field .tracker-view-nested,
+.tracker-view-container .tracker-view-field .tracker-editor-list-item,
+.tracker-view-container .tracker-view-field .tracker-editor-nested,
+.tracker-view-container .tracker-view-field .tracker-view-nested {
+  padding-left: 20px;
+}
+.tracker-editor-container .menu_button,
+.tracker-view-container .menu_button {
+  white-space: nowrap;
 }
 
 .mes_tracker .tracker_default_mes_template {
@@ -227,6 +232,13 @@
 .tracker-modal-content .tracker-editor-container {
   max-height: 80vh;
   overflow-y: scroll;
+}
+
+.tracker-modal-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .tracker-preset-buttons {

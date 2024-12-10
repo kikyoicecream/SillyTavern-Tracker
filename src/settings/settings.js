@@ -1,7 +1,7 @@
 import { saveSettingsDebounced } from "../../../../../../script.js";
 import { extensionFolderPath, extensionSettings } from "../../index.js";
-import { debug } from "../../lib/utils.js";
-import { defaultSettings, generationModes } from "./defaultSettings.js";
+import { debug, toTitleCase } from "../../lib/utils.js";
+import { defaultSettings, generationModes, generationTargets } from "./defaultSettings.js";
 import { generationCaptured } from "../../lib/interconnection.js";
 import { TrackerPromptMakerModal } from "../ui/trackerPromptMakerModal.js";
 
@@ -70,11 +70,13 @@ async function loadSettingsUI() {
 function setSettingsInitialValues() {
 	// Populate presets dropdown
 	updatePresetDropdown();
-	updateFieldVisibility(extensionSettings.generationMode)
+	updatePopupDropdown();
+	updateFieldVisibility(extensionSettings.generationMode);
 
 	$("#tracker_enable").prop("checked", extensionSettings.enabled);
 	$("#tracker_generation_mode").val(extensionSettings.generationMode);
 	$("#tracker_generation_target").val(extensionSettings.generationTarget);
+	$("#tracker_show_popup_for").val(extensionSettings.showPopupFor);
 	$("#tracker_format").val(extensionSettings.trackerFormat);
 	$("#tracker_debug").prop("checked", extensionSettings.debugMode);
 
@@ -117,6 +119,7 @@ function registerSettingsListeners() {
 	$("#tracker_enable").on("input", onSettingCheckboxInput("enabled"));
 	$("#tracker_generation_mode").on("change", onGenerationModeChange);
 	$("#tracker_generation_target").on("change", onSettingSelectChange("generationTarget"));
+	$("#tracker_show_popup_for").on("change", onSettingSelectChange("showPopupFor"));
 	$("#tracker_format").on("change", onSettingSelectChange("trackerFormat"));
 	$("#tracker_debug").on("input", onSettingCheckboxInput("debugMode"));
 
@@ -167,7 +170,7 @@ function onPresetSelectChange() {
 
 	// Update settings with preset settings
 	Object.assign(extensionSettings, presetSettings);
-	debug("Selected preset:", {selectedPreset, presetSettings, extensionSettings});
+	debug("Selected preset:", { selectedPreset, presetSettings, extensionSettings });
 
 	setSettingsInitialValues();
 	saveSettingsDebounced();
@@ -194,7 +197,7 @@ function onPresetNewClick() {
  */
 function onPresetSaveClick() {
 	const presetName = extensionSettings.selectedPreset;
-	
+
 	const updatedPreset = getCurrentPresetSettings();
 	extensionSettings.presets[presetName] = updatedPreset;
 	saveSettingsDebounced();
@@ -331,6 +334,9 @@ function onSettingSelectChange(settingName) {
 		const value = $(this).val();
 		extensionSettings[settingName] = value;
 		saveSettingsDebounced();
+		if (settingName === "generationTarget") {
+			updatePopupDropdown();
+		}
 	};
 }
 
@@ -407,6 +413,52 @@ function updateFieldVisibility(mode) {
 	} else if (mode === generationModes.TWO_STAGE) {
 		$("#generate_context_section").show();
 		$("#message_summarization_section").show();
+	}
+}
+
+// #endregion
+
+// #region Popup Options Management
+
+/**
+ * Updates the popup for dropdown with the available values.
+ */
+function updatePopupDropdown() {
+	const showPopupForSelect = $("#tracker_show_popup_for");
+	const availablePopupOptions = [];
+	switch (extensionSettings.generationTarget) {
+		case generationTargets.CHARACTER:
+			availablePopupOptions.push(generationTargets.USER);
+			availablePopupOptions.push(generationTargets.NONE);
+			break;
+		case generationTargets.USER:
+			availablePopupOptions.push(generationTargets.CHARACTER);
+			availablePopupOptions.push(generationTargets.NONE);
+			break;
+		case generationTargets.BOTH:
+			availablePopupOptions.push(generationTargets.NONE);
+			break;
+		case generationTargets.NONE:
+			availablePopupOptions.push(generationTargets.BOTH);
+			availablePopupOptions.push(generationTargets.USER);
+			availablePopupOptions.push(generationTargets.CHARACTER);
+			availablePopupOptions.push(generationTargets.NONE);
+			break;
+	}
+
+	if(!availablePopupOptions.includes(extensionSettings.showPopupFor)) {
+		extensionSettings.showPopupFor = generationTargets.NONE;
+		saveSettingsDebounced();
+	}
+
+	showPopupForSelect.empty();
+	for (const popupOption of availablePopupOptions) {
+		const text = toTitleCase(popupOption);
+		const option = $("<option>").val(popupOption).text(text);
+		if (popupOption === extensionSettings.showPopupFor) {
+			option.attr("selected", "selected");
+		}
+		showPopupForSelect.append(option);
 	}
 }
 

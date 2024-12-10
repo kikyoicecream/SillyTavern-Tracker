@@ -2,7 +2,7 @@ import { saveChatConditional, chat, chat_metadata, setExtensionPrompt, extension
 
 import { hasPendingFileAttachment } from "../../../../../scripts/chats.js";
 import { getMessageTimeStamp } from "../../../../../scripts/RossAscends-mods.js";
-import { debug, getLastNonSystemMessageIndex, getNextNonSystemMessageIndex, getPreviousNonSystemMessageIndex, isSystemMessage, shouldGenerateTracker, warn } from "../lib/utils.js";
+import { debug, getLastNonSystemMessageIndex, getNextNonSystemMessageIndex, getPreviousNonSystemMessageIndex, isSystemMessage, shouldGenerateTracker, shouldShowPopup, warn } from "../lib/utils.js";
 import { extensionSettings } from "../index.js";
 import { generateTracker, getRequestPrompt } from "./generation.js";
 import { generationModes, generationTargets } from "./settings/settings.js";
@@ -78,7 +78,7 @@ export async function injectInlinePrompt(clearTracker = false) {
  */
 export async function injectTracker(tracker = "", position = false) {
 	const trackerYAML = !tracker || tracker == "" ? "" : getCleanTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.YAML);
-	debug("Injecting tracker:", {tracker: trackerYAML, position});
+	debug("Injecting tracker:", { tracker: trackerYAML, position });
 	await setExtensionPrompt("tracker", trackerYAML, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
 }
 
@@ -280,6 +280,15 @@ async function handleStagedGeneration(type, options, dryRun) {
 		return;
 	}
 
+	if (shouldShowPopup(mesId, type)) {
+		const manualTracker = await showManualTrackerPopup(mesId);
+		if (manualTracker) {
+			chat[mesId].tracker = manualTracker;
+			await saveChatConditional();
+			TrackerPreviewManager.updatePreview(mesId);
+		}
+	}
+
 	const lastMes = chat[mesId];
 
 	let tracker;
@@ -308,21 +317,9 @@ async function handleStagedGeneration(type, options, dryRun) {
 		if (shouldGenerateTracker(mesId + 1, type)) {
 			debug("Generating new tracker for message:", mesId);
 			tracker = await generateTracker(mesId, type);
-		} else if (extensionSettings.generationTarget === generationTargets.NONE) {
-			const lastMesWithTracker = chat
-				.slice()
-				.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
-				.pop();
-
-			let manualTracker;
-			if (lastMesWithTracker) {
-				manualTracker = getCleanTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
-			} else {
-				manualTracker = getDefaultTracker(extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
-			}
-
-			const trackerEditor = new TrackerEditorModal(extensionSettings.trackerDef);
-			tracker = await trackerEditor.show(manualTracker);
+		} else if (shouldShowPopup(mesId + 1, type)) {
+			const manualTracker = await showManualTrackerPopup(mesId + 1);
+			if (manualTracker) tracker = manualTracker;
 		}
 
 		if (tracker) {
@@ -344,8 +341,8 @@ async function handleStagedGeneration(type, options, dryRun) {
 			const lastMesWithTrackerIndex = chat.length - 1 - lastMesReverseIndex;
 			const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 
-				tracker = getCleanTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
-				position = lastMesReverseIndex;
+			tracker = getCleanTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
+			position = lastMesReverseIndex;
 		} else {
 			tracker = "";
 			position = 0;
@@ -355,6 +352,25 @@ async function handleStagedGeneration(type, options, dryRun) {
 	await injectTracker(tracker, position);
 
 	if (manageStopButton) activateSendButtons();
+}
+
+async function showManualTrackerPopup(mesId = null) {
+	const lastMesWithTracker = chat
+		.slice()
+		.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
+		.pop();
+
+	let manualTracker;
+	if (lastMesWithTracker) {
+		manualTracker = getCleanTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
+	} else {
+		manualTracker = getDefaultTracker(extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
+	}
+
+	const trackerEditor = new TrackerEditorModal(mesId);
+	const tracker = await trackerEditor.show(manualTracker);
+
+	return tracker;
 }
 
 /**

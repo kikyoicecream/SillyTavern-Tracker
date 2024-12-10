@@ -15,12 +15,20 @@
 			<!-- Generation Target -->
 			<div class="tracker-block m-b-1 m-t-1">
 				<label for="tracker_generation_target">Generation Target</label><br />
-				<small>Specifies who the tracker should auto-generate for: User, Character, Both, or None. Selecting "None" will prompt manual updates.</small><br />
+				<small>Specifies who the tracker should auto-generate for: User, Character, Both, or None.</small><br />
 				<select id="tracker_generation_target" class="text_pole">
 					<option value="both">Both</option>
 					<option value="user">User</option>
 					<option value="character">Character</option>
 					<option value="none">None</option>
+				</select>
+			</div>
+			<!-- Show Popup For -->
+			<div class="tracker-block m-b-1 m-t-1">
+				<label for="tracker_show_popup_for">Generation Target</label><br />
+				<small>Specifies for who there should be a popup to manualy enter the tracker data: User, Character, Both, or None.</small><br />
+				<select id="tracker_show_popup_for" class="text_pole">
+					<!-- Options will be populated dynamically -->
 				</select>
 			</div>
 			<!-- Tracker Format -->
