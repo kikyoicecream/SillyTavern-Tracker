@@ -56,6 +56,12 @@ export class TrackerPreview {
         const existingPreview = this.messageElement.querySelector('.mes_tracker');
         if (existingPreview) existingPreview.remove();
 
+        // If tracker is empty, do not render a preview
+        if (!this.tracker || Object.keys(this.tracker).length === 0) {
+            debug(`Tracker for message ${this.messageId} is empty. Skipping preview.`);
+            return;
+        }
+
         // Create and insert the new preview
         this.previewElement = document.createElement('div');
         this.previewElement.className = 'mes_tracker';
