@@ -14,7 +14,7 @@ export async function generateTrackerCommand(args, value){
         throw new Error(`No valid message found to generate a tracker.`);
     }
 
-    let include = args?.include.toUpperCase();
+    let include = args?.include ? args.include.toUpperCase() : null;
     if(!include || !Object.keys(FIELD_INCLUDE_OPTIONS).includes(include)) include = 'DYNAMIC';
 
     const previousMesId = getPreviousNonSystemMessageIndex(mesId);
