@@ -110,6 +110,7 @@ function registerSettingsListeners() {
 	$("#tracker_preset_new").on("click", onPresetNewClick);
 	$("#tracker_preset_save").on("click", onPresetSaveClick);
 	$("#tracker_preset_rename").on("click", onPresetRenameClick);
+	$("#tracker_preset_restore").on("click", onPresetRestoreClick);
 	$("#tracker_preset_delete").on("click", onPresetDeleteClick);
 	$("#tracker_preset_export").on("click", onPresetExportClick);
 	$("#tracker_preset_import_button").on("click", onPresetImportButtonClick);
@@ -223,6 +224,20 @@ function onPresetRenameClick() {
 	} else if (extensionSettings.presets[newName]) {
 		alert("A preset with that name already exists.");
 	}
+}
+
+/**
+ * Event handler for renaming an existing preset.
+ */
+function onPresetRestoreClick() {
+	const presetSettings = extensionSettings.presets[extensionSettings.selectedPrese];
+
+	// Restore settings with preset settings
+	Object.assign(extensionSettings, presetSettings);
+
+	setSettingsInitialValues();
+	saveSettingsDebounced();
+	toastr.success(`Tracker preset ${extensionSettings.selectedPreset} restored.`);
 }
 
 /**
