@@ -1,6 +1,6 @@
 import { generateRaw, chat, characters, this_chid, getCharacterCardFields, name1 } from "../../../../../script.js";
 import { groups, selected_group } from "../../../../../scripts/group-chats.js";
-import { log, warn, debug, error } from "../lib/utils.js";
+import { log, warn, debug, error, unescapeJsonString } from "../lib/utils.js";
 import { yamlToJSON } from "../lib/ymlParser.js";
 import { extensionSettings } from "../index.js";
 import { generationModes } from "./settings/settings.js";
@@ -116,14 +116,16 @@ async function generateTwoStageTracker(mesNum, includedFields) {
  * @param {number|null} responseLength
  */
 async function sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseLength) {
-	const tracker = await generateRaw(requestPrompt, null, false, false, systemPrompt, responseLength);
+	let tracker = await generateRaw(requestPrompt, null, false, false, systemPrompt, responseLength);
 	debug("Generated tracker:", { tracker });
 
 	let newTracker;
 	try {
+		if(extensionSettings.trackerFormat == trackerFormat.JSON) tracker = unescapeJsonString(tracker);
 		const trackerContent = tracker.match(/<tracker>([\s\S]*?)<\/tracker>/);
-		const result = trackerContent ? trackerContent[1].trim() : null;
-		newTracker = JSON.parse(yamlToJSON(result));
+		let result = trackerContent ? trackerContent[1].trim() : null;
+		if(extensionSettings.trackerFormat == trackerFormat.YAML) result = yamlToJSON(result);
+		newTracker = JSON.parse(result);
 	} catch (e) {
 		error("Failed to parse tracker:", tracker, e);
 	}
