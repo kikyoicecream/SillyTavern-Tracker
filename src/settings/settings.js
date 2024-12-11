@@ -187,6 +187,7 @@ function onPresetNewClick() {
 		extensionSettings.selectedPreset = presetName;
 		updatePresetDropdown();
 		saveSettingsDebounced();
+		toastr.success(`Tracker preset ${presetName} created.`);
 	} else if (extensionSettings.presets[presetName]) {
 		alert("A preset with that name already exists.");
 	}
@@ -201,6 +202,7 @@ function onPresetSaveClick() {
 	const updatedPreset = getCurrentPresetSettings();
 	extensionSettings.presets[presetName] = updatedPreset;
 	saveSettingsDebounced();
+	toastr.success(`Tracker preset ${presetName} saved.`);
 }
 
 /**
@@ -217,6 +219,7 @@ function onPresetRenameClick() {
 		}
 		updatePresetDropdown();
 		saveSettingsDebounced();
+		toastr.success(`Tracker preset ${oldName} renamed to ${newName}.`);
 	} else if (extensionSettings.presets[newName]) {
 		alert("A preset with that name already exists.");
 	}
@@ -233,6 +236,7 @@ function onPresetDeleteClick() {
 		updatePresetDropdown();
 		onPresetSelectChange.call($("#tracker_preset_select"));
 		saveSettingsDebounced();
+		toastr.success(`Tracker preset ${presetName} deleted.`);
 	}
 }
 
@@ -279,6 +283,7 @@ function onPresetImportChange(event) {
 			}
 			updatePresetDropdown();
 			saveSettingsDebounced();
+			toastr.success("Presets imported successfully.");
 		} catch (err) {
 			alert("Failed to import presets: " + err.message);
 		}
@@ -374,6 +379,11 @@ function onSettingNumberInput(settingName) {
 		let value = parseFloat($(this).val());
 		if (isNaN(value)) {
 			value = 0;
+		}
+
+		if(settingName == "numberOfMessages" && value < 1) {
+			value = 1; 
+			$(this).val(1);
 		}
 		extensionSettings[settingName] = value;
 		saveSettingsDebounced();
