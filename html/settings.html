@@ -169,7 +169,7 @@
 						<label for="tracker_mes_tracker_template">Message Tracker HTML</label><br />
 						<small
 							>Define the HTML for the tracker preview displayed with each message. Use macros like:<br />
-							{{key.subkey}}, {{#join "delimiter" arrayKey}}, {{#foreach objectOrArrayKey itemName}}...{{itemName.subKey}}...{{/foreach}}.</small
+							{{key.subkey}}, {{#join "delimiter" arrayKey}}, {{#foreach objectOrArrayKey itemName}}...{{itemName.subKey}}...{{/foreach}}, {{#if key.subkey}}...{{/if}}.</small
 						><br />
 						<textarea id="tracker_mes_tracker_template" class="text_pole" rows="5"></textarea>
 					</div>
