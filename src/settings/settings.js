@@ -127,7 +127,7 @@ function registerSettingsListeners() {
 	$("#tracker_context_prompt").on("input", onSettingInputareaInput("generateContextTemplate"));
 	$("#tracker_system_prompt").on("input", onSettingInputareaInput("generateSystemPrompt"));
 	$("#tracker_request_prompt").on("input", onSettingInputareaInput("generateRequestPrompt"));
-	$("#tracker_recent_messages").on("input", onSettingInputareaInput("recentMessagesTemplate"));
+	$("#tracker_recent_messages").on("input", onSettingInputareaInput("generateRecentMessagesTemplate"));
 	$("#tracker_inline_request_prompt").on("input", onSettingInputareaInput("inlineRequestPrompt"));
 	$("#tracker_message_summarization_context_template").on("input", onSettingInputareaInput("messageSummarizationContextTemplate"));
 	$("#tracker_message_summarization_system_prompt").on("input", onSettingInputareaInput("messageSummarizationSystemPrompt"));
