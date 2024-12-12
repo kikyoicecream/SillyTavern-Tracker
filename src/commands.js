@@ -1,8 +1,9 @@
 import { debug, getLastNonSystemMessageIndex, getPreviousNonSystemMessageIndex } from "../lib/utils.js";
 import { saveChatConditional, chat, chat_metadata } from "../../../../../script.js";
 import { generateTracker } from "./generation.js";
-import { FIELD_INCLUDE_OPTIONS } from "./trackerDataHandler.js";
+import { FIELD_INCLUDE_OPTIONS, getTracker, OUTPUT_FORMATS } from "./trackerDataHandler.js";
 import { TrackerPreviewManager } from "./ui/trackerPreviewManager.js";
+import { extensionSettings } from "../index.js";
 
 export async function generateTrackerCommand(args, value){
     let mesId = args?.message;
@@ -67,6 +68,24 @@ export async function saveTrackerToMessageCommand(args, value){
     chat[mesId].tracker = tracker;
     await saveChatConditional();
     TrackerPreviewManager.updatePreview(mesId);
+
+    return JSON.stringify(tracker);
+}
+
+export async function getTrackerCommand(args, value){
+    const mesId = args?.message ?? getLastNonSystemMessageIndex();
+
+    if (!mesId) {
+        throw new Error(`No valid message found to generate a tracker.`);
+    }
+
+    const trackerRaw = chat[mesId]?.tracker;
+
+    if (!trackerRaw) {
+        throw new Error(`No tracker found for message ${mesId}.`);
+    }
+
+    const tracker = getTracker(trackerRaw, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
 
     return JSON.stringify(tracker);
 }
