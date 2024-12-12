@@ -319,7 +319,7 @@ async function handleStagedGeneration(type, options, dryRun) {
 			chat_metadata.tracker.cmdTrackerOverride = null;
 		} else if (shouldGenerateTracker(mesId + 1, type)) {
 			debug("Generating new tracker for message:", mesId);
-			tracker = await generateTracker(mesId, type);
+			tracker = await generateTracker(mesId);
 		} else if (shouldShowPopup(mesId + 1, type)) {
 			const manualTracker = await showManualTrackerPopup(mesId + 1);
 			if (manualTracker) tracker = manualTracker;
