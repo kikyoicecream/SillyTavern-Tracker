@@ -1,6 +1,5 @@
 import { chat } from "../../../../../script.js";
-import { is_group_generating } from "../../../../../scripts/group-chats.js";
-import { getLastNonSystemMessageIndex, log } from "../lib/utils.js";
+import { selected_group, is_group_generating } from "../../../../../scripts/group-chats.js";
 import { debug, getLastNonSystemMessageIndex, log } from "../lib/utils.js";
 import { isEnabled } from "./settings/settings.js";
 import { prepareMessageGeneration, addTrackerToMessage, clearInjects } from "./tracker.js";
@@ -30,7 +29,7 @@ async function onChatChanged(args) {
  */
 async function onGenerateAfterCommands(type, options, dryRun) {
 	await clearInjects();
-	if (!await isEnabled() || chat.length == 0 || is_group_generating || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate"].includes(type))) return;
+	if (!await isEnabled() || chat.length == 0 || (selected_group && !is_group_generating) || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate", "group_chat"].includes(type))) return;
 	log("GENERATION_AFTER_COMMANDS ", [type, options, dryRun]);
 	await prepareMessageGeneration(type, options, dryRun);
 	releaseGeneration();
