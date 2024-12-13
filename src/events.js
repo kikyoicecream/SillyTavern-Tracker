@@ -1,6 +1,7 @@
 import { chat } from "../../../../../script.js";
 import { is_group_generating } from "../../../../../scripts/group-chats.js";
 import { getLastNonSystemMessageIndex, log } from "../lib/utils.js";
+import { debug, getLastNonSystemMessageIndex, log } from "../lib/utils.js";
 import { isEnabled } from "./settings/settings.js";
 import { prepareMessageGeneration, addTrackerToMessage, clearInjects } from "./tracker.js";
 import { releaseGeneration } from "../lib/interconnection.js";
@@ -79,6 +80,10 @@ async function onUserMessageRendered(mesId) {
 	updateTrackerUI();
 }
 
+async function generateAfterCombinePrompts(prompt) {
+	debug("GENERATE_AFTER_COMBINE_PROMPTS", {prompt});
+}
+
 export const eventHandlers = {
 	onChatChanged,
 	onGenerateAfterCommands,
@@ -86,6 +91,7 @@ export const eventHandlers = {
 	onMessageSent,
 	onCharacterMessageRendered,
 	onUserMessageRendered,
+	generateAfterCombinePrompts
 };
 
 function updateTrackerUI() {
