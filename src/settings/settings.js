@@ -230,7 +230,7 @@ function onPresetRenameClick() {
  * Event handler for renaming an existing preset.
  */
 function onPresetRestoreClick() {
-	const presetSettings = extensionSettings.presets[extensionSettings.selectedPrese];
+	const presetSettings = extensionSettings.presets[extensionSettings.selectedPreset];
 
 	// Restore settings with preset settings
 	Object.assign(extensionSettings, presetSettings);
