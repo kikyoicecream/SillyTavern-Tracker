@@ -54,6 +54,15 @@
 .tracker-view-container .tracker-view-field .tracker-view-nested {
   padding-left: 20px;
 }
+.tracker-editor-container .tracker-editor-field .tracker-editor-textarea,
+.tracker-editor-container .tracker-view-field .tracker-editor-textarea,
+.tracker-view-container .tracker-editor-field .tracker-editor-textarea,
+.tracker-view-container .tracker-view-field .tracker-editor-textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 0px;
+  box-sizing: border-box;
+}
 .tracker-editor-container .menu_button,
 .tracker-view-container .menu_button {
   white-space: nowrap;
@@ -89,6 +98,9 @@
 
 .tracker-prompt-maker {
   text-align: left;
+  /* Placeholder styling */
+  /* Helper styling during dragging */
+  /* Shrink sibling fields in the same container during drag */
 }
 .tracker-prompt-maker > .fields-container {
   max-height: 80vh;
@@ -106,11 +118,11 @@
 }
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper {
   display: flex;
-  flex-wrap: wrap;
   gap: 10px;
 }
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper {
   flex-grow: 1;
+  flex-shrink: 1 !important;
 }
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper,
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-type-wrapper,
@@ -170,6 +182,32 @@
 }
 .tracker-prompt-maker .buttons-wrapper button:hover {
   background-color: var(--white30a);
+}
+.tracker-prompt-maker .drag-handle {
+  cursor: move; /* Changes the cursor to indicate draggable area */
+  font-size: 18px; /* Increases the size for better visibility */
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none; /* Prevents text selection when dragging */
+}
+.tracker-prompt-maker .ui-sortable-placeholder {
+  border: 1px dashed #ccc; /* Dashed border */
+  visibility: visible !important;
+}
+.tracker-prompt-maker .ui-sortable-helper {
+  z-index: 1000; /* Ensure the helper appears above other elements */
+  pointer-events: none; /* Prevent interaction with the helper */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for clarity */
+}
+.tracker-prompt-maker .fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .prompt-default-example-wrapper,
+.tracker-prompt-maker .fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .buttons-wrapper,
+.tracker-prompt-maker .fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .nested-fields-container {
+  display: none;
+}
+.tracker-prompt-maker .nested-fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .prompt-default-example-wrapper,
+.tracker-prompt-maker .nested-fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .buttons-wrapper,
+.tracker-prompt-maker .nested-fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .nested-fields-container {
+  display: none;
 }
 
 .tracker-modal-control-bar {
