@@ -77,6 +77,63 @@ export class TrackerContentRenderer {
 						wrapper.appendChild(nestedFields);
 						break;
 					}
+					case this.FIELD_TYPES.FOR_EACH_ARRAY: {
+						const nestedFields = document.createElement("div");
+						nestedFields.className = "tracker-view-nested";
+
+						Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+							// nestedValue is expected to be an array
+							const forEachWrapper = document.createElement("div");
+							forEachWrapper.className = "tracker-view-field";
+
+							const forEachLabel = document.createElement("span");
+							forEachLabel.className = "tracker-view-label";
+							forEachLabel.textContent = `${nestedKey}: `;
+							forEachWrapper.appendChild(forEachLabel);
+
+							const forEachFields = document.createElement("div");
+							forEachFields.className = "tracker-view-nested";
+
+							// Determine if single string field or multiple fields
+							const nestedFieldValues = Object.values(fieldSchema.nestedFields);
+							const singleStringField = nestedFieldValues.length === 1 && nestedFieldValues[0].type === this.FIELD_TYPES.STRING;
+
+							if (singleStringField) {
+								// Arrays of strings
+								const arrayString = Array.isArray(nestedValue) ? nestedValue.join("; ") : "";
+								const valueSpan = document.createElement("span");
+								valueSpan.className = "tracker-view-value";
+								valueSpan.textContent = arrayString;
+								forEachFields.appendChild(valueSpan);
+							} else {
+								// Arrays of objects
+								if (Array.isArray(nestedValue)) {
+									nestedValue.forEach((arrItem, arrIndex) => {
+										const arrItemWrapper = document.createElement("div");
+										arrItemWrapper.className = "tracker-view-field";
+
+										const arrItemLabel = document.createElement("span");
+										arrItemLabel.className = "tracker-view-label";
+										arrItemLabel.textContent = `[${arrIndex}]: `;
+										arrItemWrapper.appendChild(arrItemLabel);
+
+										const arrItemFields = document.createElement("div");
+										arrItemFields.className = "tracker-view-nested";
+										createFields(arrItem, fieldSchema.nestedFields, arrItemFields);
+
+										arrItemWrapper.appendChild(arrItemFields);
+										forEachFields.appendChild(arrItemWrapper);
+									});
+								}
+							}
+
+							forEachWrapper.appendChild(forEachFields);
+							nestedFields.appendChild(forEachWrapper);
+						});
+
+						wrapper.appendChild(nestedFields);
+						break;
+					}
 					default: {
 						const valueSpan = document.createElement("span");
 						valueSpan.className = "tracker-view-value";
@@ -104,6 +161,42 @@ export class TrackerContentRenderer {
 		const root = document.createElement("div");
 		root.className = "tracker-editor-container";
 
+		function adjustTextareaHeight(textarea) {
+			// Ensure no minimum height is enforced
+			textarea.style.minHeight = "0px";
+			textarea.style.overflowY = "hidden";
+			textarea.style.height = "0px"; 
+			textarea.style.height = textarea.scrollHeight + "px";
+		}
+		
+		// In your createAutoResizingTextarea function:
+		const createAutoResizingTextarea = (value, onChange) => {
+			const textarea = document.createElement("textarea");
+			textarea.className = "tracker-editor-textarea";
+			textarea.value = value || "";
+		
+			// Apply any inline styles if needed
+			textarea.style.minHeight = "0px";
+			textarea.style.overflowY = "hidden";
+			textarea.style.resize = "none"; // Prevent manual resizing if desired
+		
+			const adjust = () => adjustTextareaHeight(textarea);
+		
+			requestAnimationFrame(adjust);
+		
+			textarea.addEventListener("input", (event) => {
+				let newValue = event.target.value.replace(/"/g, "'");
+				if (newValue !== event.target.value) {
+					toastr.warning("Double quotes are not allowed and have been replaced with single quotes.");
+					event.target.value = newValue;
+				}
+				onChange(newValue);
+				adjust();
+			});
+		
+			return textarea;
+		};
+
 		const createEditorFields = (object, schema, parentElement) => {
 			for (const fieldSchema of Object.values(schema)) {
 				const value = object[fieldSchema.name];
@@ -129,15 +222,11 @@ export class TrackerContentRenderer {
 							const itemWrapper = document.createElement("div");
 							itemWrapper.className = "tracker-editor-list-item";
 
-							const input = document.createElement("input");
-							input.className = "text_pole";
-							input.type = "text";
-							input.value = itemValue;
-							input.addEventListener("input", (event) => {
-								arrayValue[index] = event.target.value.replace(/"/g, "'");
+							const textarea = createAutoResizingTextarea(itemValue, (newVal) => {
+								arrayValue[index] = newVal;
 								onUpdate(tracker);
 							});
-							itemWrapper.appendChild(input);
+							itemWrapper.appendChild(textarea);
 
 							const removeButton = document.createElement("button");
 							removeButton.className = "menu_button interactable";
@@ -183,6 +272,26 @@ export class TrackerContentRenderer {
 						const nestedFields = document.createElement("div");
 						nestedFields.className = "tracker-editor-nested";
 
+						const createDefaultValues = (schema) => {
+							const obj = {};
+							for (const nestedField of Object.values(schema)) {
+								switch (nestedField.type) {
+									case this.FIELD_TYPES.STRING:
+										obj[nestedField.name] = nestedField.defaultValue || "";
+										break;
+									case this.FIELD_TYPES.ARRAY:
+										obj[nestedField.name] = nestedField.defaultValue || [];
+										break;
+									case this.FIELD_TYPES.OBJECT:
+										obj[nestedField.name] = createDefaultValues(nestedField.nestedFields);
+										break;
+									default:
+										obj[nestedField.name] = nestedField.defaultValue || "";
+								}
+							}
+							return obj;
+						};
+
 						// Existing entries
 						Object.entries(objectValue).forEach(([nestedKey, nestedValue]) => {
 							const itemWrapper = document.createElement("div");
@@ -205,34 +314,12 @@ export class TrackerContentRenderer {
 
 							const forEachFields = document.createElement("div");
 							forEachFields.className = "tracker-editor-nested";
-
 							createEditorFields(nestedValue, fieldSchema.nestedFields, forEachFields);
 							forEachFields.appendChild(removeButton);
 							itemWrapper.appendChild(forEachFields);
 
 							nestedFields.appendChild(itemWrapper);
 						});
-
-						// Function to create default values from schema
-						const createDefaultValues = (schema) => {
-							const obj = {};
-							for (const nestedField of Object.values(schema)) {
-								switch (nestedField.type) {
-									case this.FIELD_TYPES.STRING:
-										obj[nestedField.name] = nestedField.defaultValue || "";
-										break;
-									case this.FIELD_TYPES.ARRAY:
-										obj[nestedField.name] = nestedField.defaultValue || [];
-										break;
-									case this.FIELD_TYPES.OBJECT:
-										obj[nestedField.name] = createDefaultValues(nestedField.nestedFields);
-										break;
-									default:
-										obj[nestedField.name] = nestedField.defaultValue || "";
-								}
-							}
-							return obj;
-						};
 
 						// Add Item button
 						const addButton = document.createElement("button");
@@ -279,25 +366,157 @@ export class TrackerContentRenderer {
 						});
 
 						nestedFields.appendChild(addButton);
+						wrapper.appendChild(nestedFields);
+						break;
+					}
+					case this.FIELD_TYPES.FOR_EACH_ARRAY: {
+						const objectValue = value || {};
+						object[fieldSchema.name] = objectValue;
 
+						const nestedFields = document.createElement("div");
+						nestedFields.className = "tracker-editor-nested";
+
+						const nestedFieldValues = Object.values(fieldSchema.nestedFields);
+						const singleStringField = nestedFieldValues.length === 1 && nestedFieldValues[0].type === this.FIELD_TYPES.STRING;
+
+						const createDefaultValues = (schema) => {
+							const obj = {};
+							for (const nestedField of Object.values(schema)) {
+								switch (nestedField.type) {
+									case this.FIELD_TYPES.STRING:
+										obj[nestedField.name] = nestedField.defaultValue || "";
+										break;
+									case this.FIELD_TYPES.ARRAY:
+										obj[nestedField.name] = nestedField.defaultValue || [];
+										break;
+									case this.FIELD_TYPES.OBJECT:
+										obj[nestedField.name] = createDefaultValues(nestedField.nestedFields);
+										break;
+									default:
+										obj[nestedField.name] = nestedField.defaultValue || "";
+								}
+							}
+							return obj;
+						};
+
+						const createDefaultArrayItem = () => {
+							if (singleStringField) {
+								return "";
+							} else {
+								return createDefaultValues(fieldSchema.nestedFields);
+							}
+						};
+
+						Object.entries(objectValue).forEach(([nestedKey, arrayValue]) => {
+							if (!Array.isArray(arrayValue)) {
+								arrayValue = [];
+								objectValue[nestedKey] = arrayValue;
+							}
+
+							const itemWrapper = document.createElement("div");
+							itemWrapper.className = "tracker-editor-field";
+
+							const keyLabel = document.createElement("label");
+							keyLabel.className = "tracker-editor-label";
+							keyLabel.textContent = `${nestedKey}: `;
+							itemWrapper.appendChild(keyLabel);
+
+							const removeKeyButton = document.createElement("button");
+							removeKeyButton.className = "menu_button interactable";
+							removeKeyButton.textContent = "Remove Key";
+							removeKeyButton.addEventListener("click", () => {
+								delete objectValue[nestedKey];
+								onUpdate(tracker);
+								itemWrapper.remove();
+							});
+							itemWrapper.appendChild(removeKeyButton);
+
+							const arrayContainer = document.createElement("div");
+							arrayContainer.className = "tracker-editor-nested";
+
+							arrayValue.forEach((arrItem, arrIndex) => {
+								const arrItemWrapper = document.createElement("div");
+								arrItemWrapper.className = "tracker-editor-field";
+
+								const arrItemLabel = document.createElement("span");
+								arrItemLabel.className = "tracker-editor-label";
+								arrItemLabel.textContent = `[${arrIndex}]: `;
+								arrItemWrapper.appendChild(arrItemLabel);
+
+								if (singleStringField) {
+									// Just a textarea for a single string
+									const textarea = createAutoResizingTextarea(arrItem, (newVal) => {
+										arrayValue[arrIndex] = newVal;
+										onUpdate(tracker);
+									});
+									arrItemWrapper.appendChild(textarea);
+								} else {
+									// Multiple fields (array of objects)
+									if (typeof arrItem !== "object" || arrItem === null) {
+										arrItem = createDefaultArrayItem();
+										arrayValue[arrIndex] = arrItem;
+									}
+									const arrItemFields = document.createElement("div");
+									arrItemFields.className = "tracker-editor-nested";
+									createEditorFields(arrItem, fieldSchema.nestedFields, arrItemFields);
+									arrItemWrapper.appendChild(arrItemFields);
+								}
+
+								const removeItemButton = document.createElement("button");
+								removeItemButton.className = "menu_button interactable";
+								removeItemButton.textContent = "Remove Item";
+								removeItemButton.addEventListener("click", () => {
+									arrayValue.splice(arrIndex, 1);
+									onUpdate(tracker);
+									root.replaceWith(this.renderEditorView(tracker, onUpdate));
+								});
+								arrItemWrapper.appendChild(removeItemButton);
+
+								arrayContainer.appendChild(arrItemWrapper);
+							});
+
+							const addItemButton = document.createElement("button");
+							addItemButton.className = "menu_button interactable";
+							addItemButton.textContent = "Add Item";
+							addItemButton.addEventListener("click", () => {
+								arrayValue.push(createDefaultArrayItem());
+								onUpdate(tracker);
+								root.replaceWith(this.renderEditorView(tracker, onUpdate));
+							});
+							arrayContainer.appendChild(addItemButton);
+
+							itemWrapper.appendChild(arrayContainer);
+							nestedFields.appendChild(itemWrapper);
+						});
+
+						// Add Key button
+						const addKeyButton = document.createElement("button");
+						addKeyButton.className = "menu_button interactable";
+						addKeyButton.textContent = "Add Key";
+						addKeyButton.addEventListener("click", () => {
+							const newKey = prompt("Enter key for new array:");
+							if (newKey) {
+								if (Object.prototype.hasOwnProperty.call(objectValue, newKey)) {
+									alert("A key with that name already exists.");
+								} else {
+									objectValue[newKey] = [];
+									onUpdate(tracker);
+									root.replaceWith(this.renderEditorView(tracker, onUpdate));
+								}
+							}
+						});
+
+						nestedFields.appendChild(addKeyButton);
 						wrapper.appendChild(nestedFields);
 						break;
 					}
 					default: {
-						const input = document.createElement("input");
-						input.className = "text_pole";
-						input.type = "text";
-						input.value = value || "";
-						input.addEventListener("input", (event) => {
-							let newValue = event.target.value.replace(/"/g, "'");
-							if (newValue !== event.target.value) {
-								toastr.warning("Double quotes are not allowed and have been replaced with single quotes.");
-								event.target.value = newValue;
-							}
-							object[fieldSchema.name] = newValue;
+						// Default fields (e.g., STRING)
+						const textarea = createAutoResizingTextarea(value, (newVal) => {
+							object[fieldSchema.name] = newVal;
 							onUpdate(tracker);
 						});
-						wrapper.appendChild(input);
+						wrapper.appendChild(textarea);
 						break;
 					}
 				}
@@ -325,7 +544,6 @@ export class TrackerContentRenderer {
 			extraTextarea.className = "tracker-editor-textarea";
 			extraTextarea.value = displayValue;
 
-			// Adjust textarea height to match content
 			const adjustTextareaHeight = (textarea) => {
 				textarea.style.height = "auto";
 				textarea.style.height = textarea.scrollHeight + "px";
@@ -333,7 +551,6 @@ export class TrackerContentRenderer {
 
 			requestAnimationFrame(() => adjustTextareaHeight(extraTextarea));
 
-			// Parse JSON or save as string on update
 			extraTextarea.addEventListener("input", (event) => {
 				const content = event.target.value.trim();
 				if (content === "") {
@@ -350,7 +567,6 @@ export class TrackerContentRenderer {
 			});
 
 			extraFieldsWrapper.appendChild(extraTextarea);
-
 			root.appendChild(extraFieldsWrapper);
 		}
 
