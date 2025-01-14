@@ -18,7 +18,7 @@ import { eventHandlers } from "./src/events.js";
 import { registerGenerationMutexListeners } from './lib/interconnection.js';
 import { TrackerInterface } from "./src/ui/trackerInterface.js";
 import { TrackerPreviewManager } from "./src/ui/trackerPreviewManager.js";
-import { generateTrackerCommand, getTrackerCommand, saveTrackerToMessageCommand, trackerOverrideCommand } from "./src/commands.js";
+import { generateTrackerCommand, getTrackerCommand, saveTrackerToMessageCommand, toggleTrackerCommand, trackerOverrideCommand } from "./src/commands.js";
 import { FIELD_INCLUDE_OPTIONS } from "./src/trackerDataHandler.js";
 
 export const extensionName = "Tracker";
@@ -119,4 +119,19 @@ SlashCommandParser.addCommandObject(SlashCommand.fromProps({
 		}),
 	],
 	helpString: 'Retrieves the tracker from the specified message. If no message is provided, the tracker will be retrieved from the last non-system message.',
+}));
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+	name: 'toggle-tracker',
+	callback: toggleTrackerCommand,
+	returns: 'The new tracker enabled state.',
+	namedArgumentList: [
+		SlashCommandNamedArgument.fromProps({
+			name: 'enabled',
+			description: 'whether to enable or disable the tracker extension',
+			typeList: [ARGUMENT_TYPE.BOOLEAN],
+			isRequired: true,
+		}),
+	],
+	helpString: 'Toggle the tracker extension enabled/dissabled.',
 }));

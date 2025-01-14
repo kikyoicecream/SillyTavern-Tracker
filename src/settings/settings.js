@@ -16,6 +16,12 @@ export async function isEnabled() {
 	return extensionSettings.enabled && (await generationCaptured());
 }
 
+export async function toggleExtension(enable = true) {
+	extensionSettings.enabled = enable;
+	$("#tracker_enable").prop("checked", enable);
+	saveSettingsDebounced();
+}
+
 // #region Settings Initialization
 
 /**
