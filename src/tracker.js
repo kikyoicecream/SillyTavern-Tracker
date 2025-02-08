@@ -77,7 +77,11 @@ export async function injectInlinePrompt(clearTracker = false) {
  * @param {number} position - The position to inject the tracker.
  */
 export async function injectTracker(tracker = "", position = 0) {
-	if(tracker && tracker != "") debug("Injecting tracker:", { tracker: trackerYAML, position });
+	let trackerYAML = "";
+	if(tracker && tracker != "") {
+		trackerYAML = getCleanTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.YAML);
+		debug("Injecting tracker:", { tracker: trackerYAML, position });
+	}
 	position = Math.max(extensionSettings.minimumDepth, position);
 	await setExtensionPrompt("tracker", trackerYAML, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
 }
