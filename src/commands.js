@@ -101,5 +101,5 @@ export async function stateTrackerCommand(args, value){
         await toggleExtension(enabled);
     }
 
-    return enabled;
+    return enabled ? "true" : "false";
 }
