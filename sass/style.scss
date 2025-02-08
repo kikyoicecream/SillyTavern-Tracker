@@ -109,6 +109,7 @@
 		.name-dynamic-type-wrapper {
 			display: flex;
 			gap: 10px;
+			align-items: center;
 
 			.field-name-wrapper {
 				flex-grow: 1;
@@ -205,6 +206,14 @@
 		z-index: 1000; /* Ensure the helper appears above other elements */
 		pointer-events: none; /* Prevent interaction with the helper */
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for clarity */
+	}
+
+	.fields-container.dragging > .field-wrapper,
+	.nested-fields-container.dragging > .field-wrapper {
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 	}
 
 	/* Shrink sibling fields in the same container during drag */

@@ -127,7 +127,6 @@ export class TrackerPromptMaker {
 					this.rebuildBackendObjectFromDOM();
 				},
             })
-            .disableSelection(); // Prevent text selection during drag
     }
     
 	/**
