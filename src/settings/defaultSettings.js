@@ -330,6 +330,16 @@ const mesTrackerTemplate = `<div class="tracker_default_mes_template">
 </div>
 <hr>`;
 
+const mesTrackerJavascript = `function() {
+    const helloWorld = () => {
+        console.log("Hello, World!");
+    };
+
+    return {
+        helloWorld
+    };
+}`;
+
 const trackerDef = {
 	"field-0": {
 		name: "Time",
@@ -499,6 +509,7 @@ export const defaultSettings = {
 	characterDescriptionTemplate: characterDescriptionTemplate,
 
 	mesTrackerTemplate: mesTrackerTemplate,
+	mesTrackerJavascript: mesTrackerJavascript,
 	trackerDef: trackerDef,
 
 	trackerPreviewSelector: trackerPreviewSelector,
@@ -527,6 +538,7 @@ export const defaultSettings = {
 			characterDescriptionTemplate: characterDescriptionTemplate,
 
 			mesTrackerTemplate: mesTrackerTemplate,
+			mesTrackerJavascript: mesTrackerJavascript,
 			trackerDef: trackerDef,
 		},
 		"Default-TwoStage": {
@@ -547,6 +559,7 @@ export const defaultSettings = {
 			characterDescriptionTemplate: characterDescriptionTemplate,
 
 			mesTrackerTemplate: mesTrackerTemplate,
+			mesTrackerJavascript: mesTrackerJavascript,
 			trackerDef: trackerDef,
 		},
 		"Default-Inline": {
@@ -566,6 +579,7 @@ export const defaultSettings = {
 			characterDescriptionTemplate: characterDescriptionTemplate,
 
 			mesTrackerTemplate: mesTrackerTemplate,
+			mesTrackerJavascript: mesTrackerJavascript,
 			trackerDef: trackerDef,
 		},
 	},

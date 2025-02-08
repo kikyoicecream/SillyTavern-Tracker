@@ -1,6 +1,6 @@
 import { saveSettingsDebounced } from "../../../../../../script.js";
 import { extensionFolderPath, extensionSettings } from "../../index.js";
-import { debug, toTitleCase } from "../../lib/utils.js";
+import { error, debug, toTitleCase } from "../../lib/utils.js";
 import { defaultSettings, generationModes, generationTargets } from "./defaultSettings.js";
 import { generationCaptured } from "../../lib/interconnection.js";
 import { TrackerPromptMakerModal } from "../ui/trackerPromptMakerModal.js";
@@ -98,10 +98,14 @@ function setSettingsInitialValues() {
 	$("#tracker_message_summarization_recent_messages").val(extensionSettings.messageSummarizationRecentMessagesTemplate);
 	$("#tracker_character_description").val(extensionSettings.characterDescriptionTemplate);
 	$("#tracker_mes_tracker_template").val(extensionSettings.mesTrackerTemplate);
+	$("#tracker_mes_tracker_javascript").val(extensionSettings.mesTrackerJavascript);
 	$("#tracker_number_of_messages").val(extensionSettings.numberOfMessages);
 	$("#tracker_generate_from_message").val(extensionSettings.generateFromMessage);
 	$("#tracker_minimum_depth").val(extensionSettings.minimumDepth);
 	$("#tracker_response_length").val(extensionSettings.responseLength);
+
+	// Process the tracker javascript
+	processTrackerJavascript();
 }
 
 // #endregion
@@ -142,6 +146,7 @@ function registerSettingsListeners() {
 	$("#tracker_message_summarization_recent_messages").on("input", onSettingInputareaInput("messageSummarizationRecentMessagesTemplate"));
 	$("#tracker_character_description").on("input", onSettingInputareaInput("characterDescriptionTemplate"));
 	$("#tracker_mes_tracker_template").on("input", onSettingInputareaInput("mesTrackerTemplate"));
+	$("#tracker_mes_tracker_javascript").on("input", onSettingInputareaInput("mesTrackerJavascript"));
 	$("#tracker_number_of_messages").on("input", onSettingNumberInput("numberOfMessages"));
 	$("#tracker_generate_from_message").on("input", onSettingNumberInput("generateFromMessage"));
 	$("#tracker_minimum_depth").on("input", onSettingNumberInput("minimumDepth"));
@@ -390,7 +395,37 @@ function onSettingInputareaInput(settingName) {
 		const value = $(this).val();
 		extensionSettings[settingName] = value;
 		saveSettingsDebounced();
+		if(settingName === "mesTrackerJavascript") {
+			processTrackerJavascript();
+		}
 	};
+}
+
+/**
+ * Processes and validates the user-provided JavaScript for mesTrackerJavascript.
+ */
+function processTrackerJavascript() {
+    try {
+		const scriptContent = extensionSettings.mesTrackerJavascript;
+
+        // Parse user input as a function (if applicable) and execute it
+        const parsedFunction = new Function(`return (${scriptContent})`)();
+
+        let parsedObject;
+        if (typeof parsedFunction === "function") {
+            parsedObject = parsedFunction(); // Call the function to get the object
+        } else if (typeof parsedFunction === "object" && parsedFunction !== null) {
+            parsedObject = parsedFunction;
+        }
+
+        // Ensure the final result is an object
+        if (typeof parsedObject === "object" && parsedObject !== null) {
+            SillyTavern.tracker = parsedObject;
+            debug("Custom tracker functions updated:", SillyTavern.tracker);
+        }
+    } catch (err) {
+		SillyTavern.tracker = {};
+	}
 }
 
 /**
