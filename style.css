@@ -286,3 +286,12 @@
 .tracker-preset-buttons {
   display: flex;
 }
+
+#tracker_reset_presets:hover {
+  background-color: #a90000;
+}
+
+label[for=tracker_reset_presets] {
+  display: flex;
+  align-items: center;
+}

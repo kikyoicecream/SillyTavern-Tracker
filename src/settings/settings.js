@@ -146,6 +146,7 @@ function registerSettingsListeners() {
 	$("#tracker_response_length").on("input", onSettingNumberInput("responseLength"));
 
 	$("#tracker_prompt_maker").on("click", onTrackerPromptMakerClick);
+	$("#tracker_reset_presets").on("click", onTrackerPromptResetClick);
 }
 
 // #endregion
@@ -420,6 +421,46 @@ function onTrackerPromptMakerClick() {
 		extensionSettings.trackerDef = updatedTracker;
 		saveSettingsDebounced();
 	});
+}
+
+/**
+ * Event handler for resetting the tracker prompts to default.
+ */
+function onTrackerPromptResetClick() {
+    let resetButton = $("#tracker_reset_presets");
+    let resetLabel = resetButton.parent().find("label");
+
+    resetLabel.text("Click again to confirm");
+
+    // Remove the current click event to avoid duplicate bindings
+    resetButton.off("click");
+
+    // Set a timeout to restore the original behavior after 60 seconds
+    let timeoutId = setTimeout(() => {
+        resetLabel.text("");
+        resetButton.off("click").on("click", onTrackerPromptResetClick);
+    }, 60000);
+
+    // Bind the second-click event to reset presets
+    resetButton.one("click", function () {
+        clearTimeout(timeoutId); // Clear the timeout to prevent reverting behavior
+
+		debug("Resetting default tracker prompts to default settings.");
+
+        // Add logic here to reset the presets
+		Object.keys(defaultSettings.presets).forEach(presetName => {
+			extensionSettings.presets[presetName] = defaultSettings.presets[presetName];
+			if(extensionSettings.selectedPreset === presetName) {
+				Object.assign(extensionSettings, defaultSettings.presets[presetName]);
+			}
+		});
+		saveSettingsDebounced();
+		setSettingsInitialValues();
+
+        // Restore the original behavior
+		resetLabel.text("");
+		resetButton.off("click").on("click", onTrackerPromptResetClick);
+    });
 }
 
 // #endregion

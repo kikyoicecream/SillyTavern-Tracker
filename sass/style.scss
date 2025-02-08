@@ -187,7 +187,7 @@
 			}
 		}
 	}
-	
+
 	.drag-handle {
 		cursor: move; /* Changes the cursor to indicate draggable area */
 		font-size: 18px; /* Increases the size for better visibility */
@@ -300,4 +300,15 @@
 
 .tracker-preset-buttons {
 	display: flex;
+}
+
+#tracker_reset_presets {
+	&:hover {
+		background-color: #a90000;
+	}
+}
+
+label[for="tracker_reset_presets"] {
+	display: flex;
+	align-items: center;
 }
