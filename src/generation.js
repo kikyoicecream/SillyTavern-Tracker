@@ -324,7 +324,7 @@ function getCurrentTracker(mesNum, includedFields) {
 		returnTracker = getTracker(tracker, extensionSettings.trackerDef, includedFields, false, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
 	} else {
 		const lastMesWithTracker = chat
-		.slice()
+		.slice(0, mesNum + 1)
 		.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
 		.pop();
 		if (lastMesWithTracker) returnTracker = getTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, includedFields, false, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
