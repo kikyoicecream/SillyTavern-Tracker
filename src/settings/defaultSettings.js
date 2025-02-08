@@ -470,6 +470,7 @@ const trackerPreviewPlacement = "before";
 
 const numberOfMessages = 5;
 const generateFromMessage = 3;
+const minimumDepth = 0;
 
 const responseLength = 0;
 
@@ -505,6 +506,7 @@ export const defaultSettings = {
 
 	numberOfMessages: numberOfMessages,
 	generateFromMessage: generateFromMessage,
+	minimumDepth: minimumDepth,
 	responseLength: responseLength,
 	selectedPreset: "Default-SingleStage",
 	presets: {

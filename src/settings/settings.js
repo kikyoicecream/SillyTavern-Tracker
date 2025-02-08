@@ -100,6 +100,7 @@ function setSettingsInitialValues() {
 	$("#tracker_mes_tracker_template").val(extensionSettings.mesTrackerTemplate);
 	$("#tracker_number_of_messages").val(extensionSettings.numberOfMessages);
 	$("#tracker_generate_from_message").val(extensionSettings.generateFromMessage);
+	$("#tracker_minimum_depth").val(extensionSettings.minimumDepth);
 	$("#tracker_response_length").val(extensionSettings.responseLength);
 }
 
@@ -143,6 +144,7 @@ function registerSettingsListeners() {
 	$("#tracker_mes_tracker_template").on("input", onSettingInputareaInput("mesTrackerTemplate"));
 	$("#tracker_number_of_messages").on("input", onSettingNumberInput("numberOfMessages"));
 	$("#tracker_generate_from_message").on("input", onSettingNumberInput("generateFromMessage"));
+	$("#tracker_minimum_depth").on("input", onSettingNumberInput("minimumDepth"));
 	$("#tracker_response_length").on("input", onSettingNumberInput("responseLength"));
 
 	$("#tracker_prompt_maker").on("click", onTrackerPromptMakerClick);
