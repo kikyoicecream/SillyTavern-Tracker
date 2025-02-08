@@ -18,7 +18,7 @@ import { eventHandlers } from "./src/events.js";
 import { registerGenerationMutexListeners } from './lib/interconnection.js';
 import { TrackerInterface } from "./src/ui/trackerInterface.js";
 import { TrackerPreviewManager } from "./src/ui/trackerPreviewManager.js";
-import { generateTrackerCommand, getTrackerCommand, saveTrackerToMessageCommand, toggleTrackerCommand, trackerOverrideCommand } from "./src/commands.js";
+import { generateTrackerCommand, getTrackerCommand, saveTrackerToMessageCommand, stateTrackerCommand, trackerOverrideCommand } from "./src/commands.js";
 import { FIELD_INCLUDE_OPTIONS } from "./src/trackerDataHandler.js";
 
 export const extensionName = "Tracker";
@@ -122,16 +122,17 @@ SlashCommandParser.addCommandObject(SlashCommand.fromProps({
 }));
 
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-	name: 'toggle-tracker',
-	callback: toggleTrackerCommand,
-	returns: 'The new tracker enabled state.',
+	name: 'tracker-state',
+	callback: stateTrackerCommand,
+	returns: 'The current tracker extension state.',
 	namedArgumentList: [
 		SlashCommandNamedArgument.fromProps({
 			name: 'enabled',
 			description: 'whether to enable or disable the tracker extension',
 			typeList: [ARGUMENT_TYPE.BOOLEAN],
-			isRequired: true,
+			isRequired: false,
 		}),
 	],
-	helpString: 'Toggle the tracker extension enabled/dissabled.',
+	helpString: 'Get or set the tracker extension enabled/dissabled state.',
+	aliases: ['toggle-tracker'],
 }));

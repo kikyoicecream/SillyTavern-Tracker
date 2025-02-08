@@ -4,7 +4,7 @@ import { generateTracker } from "./generation.js";
 import { FIELD_INCLUDE_OPTIONS, getTracker, OUTPUT_FORMATS } from "./trackerDataHandler.js";
 import { TrackerPreviewManager } from "./ui/trackerPreviewManager.js";
 import { extensionSettings } from "../index.js";
-import { toggleExtension } from "./settings/settings.js";
+import { isEnabled, toggleExtension } from "./settings/settings.js";
 
 export async function generateTrackerCommand(args, value){
     let mesId = args?.message;
@@ -91,16 +91,15 @@ export async function getTrackerCommand(args, value){
     return JSON.stringify(tracker);
 }
 
-export async function toggleTrackerCommand(args, value){
+export async function stateTrackerCommand(args, value){
     const enabledString = args?.enabled;
 
-    if (!enabledString) {
-        throw new Error(`No value provided for toggle command.`);
+    var enabled = isEnabled();
+
+    if (enabledString) {
+        var enabled = enabledString.toLowerCase() === 'true';
+        await toggleExtension(enabled);
     }
-
-    const enabled = enabledString.toLowerCase() === 'true';
-
-    await toggleExtension(enabled);
 
     return enabled;
 }
