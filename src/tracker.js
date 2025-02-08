@@ -74,11 +74,10 @@ export async function injectInlinePrompt(clearTracker = false) {
 /**
  * Injects the tracker into the extension prompt system.
  * @param {object} tracker - The tracker object.
- * @param {boolean} clearTracker - If true, clears the tracker.
+ * @param {number} position - The position to inject the tracker.
  */
 export async function injectTracker(tracker = "", position = false) {
-	const trackerYAML = !tracker || tracker == "" ? "" : getCleanTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.YAML);
-	debug("Injecting tracker:", { tracker: trackerYAML, position });
+	if(tracker && tracker != "") debug("Injecting tracker:", { tracker: trackerYAML, position });
 	await setExtensionPrompt("tracker", trackerYAML, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
 }
 
