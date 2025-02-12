@@ -409,13 +409,14 @@ function onSettingInputareaInput(settingName) {
 }
 
 /**
- * Processes and validates the user-provided JavaScript for mesTrackerJavascript.
+ * Processes and validates the user-provided JavaScript for mesTrackerJavascript,
+ * ensuring optional init and cleanup functions are handled correctly.
  */
 function processTrackerJavascript() {
     try {
-		const scriptContent = extensionSettings.mesTrackerJavascript;
+        const scriptContent = extensionSettings.mesTrackerJavascript;
 
-        // Parse user input as a function (if applicable) and execute it
+        // Parse user input as a function and execute it
         const parsedFunction = new Function(`return (${scriptContent})`)();
 
         let parsedObject;
@@ -427,13 +428,39 @@ function processTrackerJavascript() {
 
         // Ensure the final result is an object
         if (typeof parsedObject === "object" && parsedObject !== null) {
+            // Call cleanup function of the existing tracker before replacing it
+            if (SillyTavern.tracker && typeof SillyTavern.tracker.cleanup === "function") {
+                try {
+                    SillyTavern.tracker.cleanup();
+                    debug("Previous tracker cleaned up successfully.");
+                } catch (cleanupError) {
+                    error("Error during tracker cleanup:", cleanupError);
+                }
+            }
+
+            // Assign the new tracker object
             SillyTavern.tracker = parsedObject;
+
+            // Call init function only if both init and cleanup exist
+            if (
+                typeof SillyTavern.tracker.init === "function" &&
+                typeof SillyTavern.tracker.cleanup === "function"
+            ) {
+                try {
+                    SillyTavern.tracker.init();
+                    debug("Tracker initialized successfully.");
+                } catch (initError) {
+                    error("Error initializing tracker:", initError);
+                }
+            }
+
             debug("Custom tracker functions updated:", SillyTavern.tracker);
         }
     } catch (err) {
-		SillyTavern.tracker = {};
-	}
+        SillyTavern.tracker = {};
+    }
 }
+
 
 /**
  * Returns a function to handle number input changes for a given setting.

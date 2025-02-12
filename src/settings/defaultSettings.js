@@ -330,15 +330,27 @@ const mesTrackerTemplate = `<div class="tracker_default_mes_template">
 </div>
 <hr>`;
 
-const mesTrackerJavascript = `function() {
-    const helloWorld = () => {
-        console.log("Hello, World!");
-    };
+const mesTrackerJavascript = `() => ({
+    const init = () => {
+        console.log("Tracker preview js initialized!");
+		// Example of hooking into tracker preview added call
+		// SillyTavern.getContext().eventSource.on("TRACKER_PREVIEW_ADDED", helloWorld)
+    },
+    const cleanup = () => {
+        console.log("Tracker preview js cleaned up!");
+		// Example of releasing tracker preview added call
+		// SillyTavern.getContext().eventSource.off("TRACKER_PREVIEW_ADDED")
+    },
+    const helloWorld = (mesId, element) => {
+        console.log({message: "Hello, World!", mesId, element});
+    }
 
     return {
+		init,
+		cleanup,
         helloWorld
     };
-}`;
+});`;
 
 const trackerDef = {
 	"field-0": {
