@@ -1,5 +1,5 @@
 import { chat } from "../../../../../../script.js";
-import { emitTrackerPreviewAdded } from "../../lib/interconnection.js";
+import { emitTrackerPreviewAdded, emitTrackerPreviewUpdated } from "../../lib/interconnection.js";
 import { debug, error } from "../../lib/utils.js";
 import { TrackerContentRenderer } from "./components/trackerContentRenderer.js";
 import { TrackerPreview } from "./components/trackerPreview.js";
@@ -230,6 +230,7 @@ export class TrackerPreviewManager {
         if (preview) {
             debug(`Updating preview for unique ID "${uniqueId}" (mesid: "${messageId}").`);
             preview.update(tracker);
+            emitTrackerPreviewUpdated(messageId, preview.messageElement);
         } else {
             debug(`No preview found for unique ID "${uniqueId}". Creating new preview.`);
             this.addPreview(messageId);
