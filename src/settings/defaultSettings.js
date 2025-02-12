@@ -532,6 +532,7 @@ export const defaultSettings = {
 			messageSummarizationContextTemplate: "",
 			messageSummarizationSystemPrompt: "",
 			messageSummarizationRequestPrompt: "",
+			messageSummarizationRecentMessagesTemplate: "",
 
 			inlineRequestPrompt: "",
 
@@ -573,6 +574,7 @@ export const defaultSettings = {
 			messageSummarizationContextTemplate: "",
 			messageSummarizationSystemPrompt: "",
 			messageSummarizationRequestPrompt: "",
+			messageSummarizationRecentMessagesTemplate: "",
 
 			inlineRequestPrompt: inlineRequestPrompt,
 

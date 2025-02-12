@@ -327,16 +327,23 @@ function onPresetImportChange(event) {
 function getCurrentPresetSettings() {
 	return {
 		generationMode: extensionSettings.generationMode,
+
 		generateContextTemplate: extensionSettings.generateContextTemplate,
 		generateSystemPrompt: extensionSettings.generateSystemPrompt,
+		generateRequestPrompt: extensionSettings.generateRequestPrompt,
 		generateRecentMessagesTemplate: extensionSettings.generateRecentMessagesTemplate,
-		inlineRequestPrompt: extensionSettings.inlineRequestPrompt,
+		
 		messageSummarizationContextTemplate: extensionSettings.messageSummarizationContextTemplate,
 		messageSummarizationSystemPrompt: extensionSettings.messageSummarizationSystemPrompt,
 		messageSummarizationRequestPrompt: extensionSettings.messageSummarizationRequestPrompt,
 		messageSummarizationRecentMessagesTemplate: extensionSettings.messageSummarizationRecentMessagesTemplate,
+
+		inlineRequestPrompt: extensionSettings.inlineRequestPrompt,
+		
 		characterDescriptionTemplate: extensionSettings.characterDescriptionTemplate,
+
 		mesTrackerTemplate: extensionSettings.mesTrackerTemplate,
+		mesTrackerJavascript: extensionSettings.mesTrackerJavascript,
 		trackerDef: extensionSettings.trackerDef,
 	};
 }
