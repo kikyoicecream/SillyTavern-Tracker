@@ -1,4 +1,5 @@
 import { chat } from "../../../../../../script.js";
+import { emitTrackerPreviewAdded } from "../../lib/interconnection.js";
 import { debug, error } from "../../lib/utils.js";
 import { TrackerContentRenderer } from "./components/trackerContentRenderer.js";
 import { TrackerPreview } from "./components/trackerPreview.js";
@@ -263,6 +264,7 @@ export class TrackerPreviewManager {
             if (preview.messageElement) {
                 this.previews.set(uniqueId, preview);
                 debug(`Created and stored preview for unique ID "${uniqueId}".`);
+                emitTrackerPreviewAdded(messageId, preview.messageElement);
             } else {
                 debug(`Failed to create preview for messageId "${messageId}".`);
             }
