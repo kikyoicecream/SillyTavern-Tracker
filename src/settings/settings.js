@@ -457,6 +457,7 @@ function processTrackerJavascript() {
             debug("Custom tracker functions updated:", SillyTavern.tracker);
         }
     } catch (err) {
+		debug("Error processing tracker JavaScript:", err);
         SillyTavern.tracker = {};
     }
 }
