@@ -330,7 +330,7 @@ const mesTrackerTemplate = `<div class="tracker_default_mes_template">
 </div>
 <hr>`;
 
-const mesTrackerJavascript = `() => ({
+const mesTrackerJavascript = `() => {
     const init = () => {
         console.log("Tracker preview js initialized!");
 
@@ -355,7 +355,7 @@ const mesTrackerJavascript = `() => ({
 		cleanup,
         helloWorld
     };
-});`;
+};`;
 
 const trackerDef = {
 	"field-0": {
