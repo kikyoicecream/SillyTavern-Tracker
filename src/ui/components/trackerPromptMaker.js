@@ -30,6 +30,14 @@ export class TrackerPromptMaker {
 		return ["OBJECT", "FOR_EACH_OBJECT", "FOR_EACH_ARRAY", "ARRAY_OBJECT"];
 	}
 
+	static get FIELD_PRESENCE_OPTIONS() {
+		return {
+			DYNAMIC: "Dynamic",
+			EPHEMERAL: "Ephemeral",
+			STATIC: "Static",
+		};
+	}
+
 	static get FIELD_INCLUDE_OPTIONS() {
 		return {
 			DYNAMIC: "dynamic",
@@ -194,17 +202,23 @@ export class TrackerPromptMaker {
 			});
 		const fieldNameDiv = $('<div class="field-name-wrapper"></div>').append(fieldNameLabel, fieldNameInput);
 
-		// Static/Dynamic Toggle with label
-		const dynamicInputId = `${fieldId}_isDynamic`;
-		const dynamicInput = $(`<input type="checkbox" id="${dynamicInputId}">`)
-			.prop("checked", fieldData.isDynamic ?? true)
+		// Presence Selector with label
+		const presenceLabel = $("<label>Presence:</label>");
+		const presenceKey = fieldData.presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC;
+		const presenceSelector = $(`
+            <select>
+                ${Object.entries(TrackerPromptMaker.FIELD_PRESENCE_OPTIONS)
+					.map(([key, value]) => `<option value="${key}">${value}</option>`)
+					.join("")}        
+            </select>
+        `)
+			.val(presenceKey)
 			.on("change", (e) => {
 				const currentFieldId = fieldWrapper.attr("data-field-id");
-				this.toggleStaticDynamic(e.target.checked, currentFieldId);
+				this.selectPresence(e.target.value, currentFieldId);
 				this.syncBackendObject();
 			});
-		const staticDynamicToggleLabel = $(`<label for="${dynamicInputId}">Dynamic:</label>`);
-		const staticDynamicDiv = $('<div class="static-dynamic-wrapper"></div>').append(staticDynamicToggleLabel, dynamicInput);
+		const presenceDiv = $('<div class="presence-wrapper"></div>').append(presenceLabel, presenceSelector);
 
 		// Field Type Selector with label
 		const fieldTypeLabel = $("<label>Field Type:</label>");
@@ -225,7 +239,7 @@ export class TrackerPromptMaker {
 		const fieldTypeDiv = $('<div class="field-type-wrapper"></div>').append(fieldTypeLabel, fieldTypeSelector);
 
 		// Append field name, static/dynamic toggle, and field type to the combined div
-		nameDynamicTypeDiv.append(fieldNameDiv, staticDynamicDiv, fieldTypeDiv);
+		nameDynamicTypeDiv.append(fieldNameDiv, presenceDiv, fieldTypeDiv);
 
 		// Append the combined div to fieldWrapper
 		fieldWrapper.append(nameDynamicTypeDiv);
@@ -320,7 +334,7 @@ export class TrackerPromptMaker {
 				parentFieldData.nestedFields[fieldId] = {
 					name: fieldData.name || "",
 					type: fieldData.type || "STRING",
-					isDynamic: fieldData.isDynamic ?? true,
+					presence: fieldData.presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC,
 					prompt: fieldData.prompt || "",
 					defaultValue: fieldData.defaultValue || "",
 					exampleValues: [...fieldData.exampleValues],
@@ -333,7 +347,7 @@ export class TrackerPromptMaker {
 			this.backendObject[fieldId] = {
 				name: fieldData.name || "",
 				type: fieldData.type || "STRING",
-				isDynamic: fieldData.isDynamic ?? true,
+				presence: fieldData.presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC,
 				prompt: fieldData.prompt || "",
 				defaultValue: fieldData.defaultValue || "",
 				exampleValues: [...fieldData.exampleValues],
@@ -443,17 +457,17 @@ export class TrackerPromptMaker {
 	}
 
 	/**
-	 * Toggles the field between static and dynamic.
-	 * @param {boolean} isDynamic - True if dynamic, false if static.
-	 * @param {string} fieldId - The ID of the field being toggled.
+	 * Handles the selection of the presence.
+	 * @param {string} presence - The selected presence.
+	 * @param {string} fieldId - The ID of the field being updated.
 	 */
-	toggleStaticDynamic(isDynamic, fieldId) {
+	selectPresence(presence, fieldId) {
 		const fieldData = this.getFieldDataById(fieldId);
 		if (fieldData) {
-			fieldData.isDynamic = isDynamic;
-			debug(`Toggled static/dynamic to ${isDynamic} for field ID: ${fieldId}`);
+			fieldData.presence = presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC;
+			debug(`Selected presence: ${presence} for field ID: ${fieldId}`);
 		} else {
-			error(`Field with ID ${fieldId} not found during toggle.`);
+			error(`Field with ID ${fieldId} not found during presence selection.`);
 		}
 	}
 
@@ -731,9 +745,8 @@ export class TrackerPromptMaker {
 				const fieldId = `field-${rebuildCounter++}`;
 
 				const fieldName = $fieldEl.find(".field-name-wrapper input").val() || "";
-				const isDynamic = $fieldEl.find(".static-dynamic-wrapper input[type=checkbox]").is(":checked");
-				const typeKey = $fieldEl.find(".field-type-wrapper select").val();
-				const fieldType = typeKey || "STRING";
+				const presence = $fieldEl.find(".presence-wrapper select").val() || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC;
+				const fieldType = $fieldEl.find(".field-type-wrapper select").val() || "STRING";
 				const prompt = $fieldEl.find(".prompt-wrapper textarea").val() || "";
 				const defaultValue = $fieldEl.find(".default-value-wrapper input").val() || "";
 
@@ -755,7 +768,7 @@ export class TrackerPromptMaker {
 				newObject[fieldId] = {
 					name: fieldName,
 					type: fieldType,
-					isDynamic: isDynamic,
+					presence: presence,
 					prompt: prompt,
 					defaultValue: defaultValue,
 					exampleValues: exampleValues,

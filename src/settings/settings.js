@@ -49,12 +49,34 @@ export async function initSettings() {
 
 		Object.assign(extensionSettings, newSettings);
 	} else {
+		migrateIsDynamicToPresence(extensionSettings);
+
 		Object.assign(extensionSettings, defaultSettings, currentSettings);
 	}
 
 	saveSettingsDebounced();
 
 	await loadSettingsUI();
+}
+
+/**
+ * Migrates the isDynamic field to presence for all objects in the settings.
+ * @param {Object} obj The object to migrate.
+ * @returns {void}
+*/
+function migrateIsDynamicToPresence(obj) {
+	if (typeof obj !== "object" || obj === null) return;
+
+	for (const key in obj) {
+		if (key === "isDynamic") {
+			// Replace isDynamic with presence, mapping true → "DYNAMIC" and false → "STATIC"
+			obj.presence = obj[key] ? "DYNAMIC" : "STATIC";
+			delete obj.isDynamic; // Remove old key
+		} else if (typeof obj[key] === "object") {
+			// Recursively migrate nested objects
+			migrateIsDynamicToPresence(obj[key]);
+		}
+	}
 }
 
 /**
@@ -305,6 +327,9 @@ function onPresetImportChange(event) {
 	reader.onload = function (e) {
 		try {
 			const importedPresets = JSON.parse(e.target.result);
+
+			migrateIsDynamicToPresence(importedPresets);
+			
 			for (const presetName in importedPresets) {
 				if (!extensionSettings.presets[presetName] || confirm(`Preset "${presetName}" already exists. Overwrite?`)) {
 					extensionSettings.presets[presetName] = importedPresets[presetName];

@@ -363,7 +363,7 @@ const trackerDef = {
 	"field-0": {
 		name: "Time",
 		type: "STRING",
-		isDynamic: true,
+		presence: "DYNAMIC",
 		prompt: 'Adjust the time in **small increments**, ideally only a few seconds per update, to reflect natural progression, avoiding large jumps unless explicitly indicated (e.g., sleep, travel). Ensure that the time is appropriate for the setting (e.g., malls are typically open during certain hours). Use the 24-hour format: "HH:MM:SS; MM/DD/YYYY (Day Name)".',
 		defaultValue: "<Updated time if changed>",
 		exampleValues: ["09:15:30; 10/16/2024 (Wednesday)", "18:45:50; 10/16/2024 (Wednesday)", "15:10:20; 10/16/2024 (Wednesday)"],
@@ -372,7 +372,7 @@ const trackerDef = {
 	"field-1": {
 		name: "Location",
 		type: "STRING",
-		isDynamic: true,
+		presence: "DYNAMIC",
 		prompt: 'Provide a **detailed and specific location**, including exact places like rooms, landmarks, or stores, following this format: "Specific Place, Building, City, State". Avoid unintended reuse of specific locations from previous examples. Example: "Food court, second floor near east wing entrance, Madison Square Mall, Los Angeles, CA".',
 		defaultValue: "<Updated location if changed>",
 		exampleValues: ["Conference Room B, 12th Floor, Apex Corporation, New York, NY", "Main Gym Hall, Maple Street Fitness Center, Denver, CO", "South Beach, Miami, FL"],
@@ -381,7 +381,7 @@ const trackerDef = {
 	"field-2": {
 		name: "Weather",
 		type: "STRING",
-		isDynamic: true,
+		presence: "DYNAMIC",
 		prompt: 'Describe current weather concisely to set the scene. Example: "Light Drizzle, Cool Outside".',
 		defaultValue: "<Updated weather if changed>",
 		exampleValues: ["Overcast, mild temperature", "Clear skies, warm evening", "Sunny, gentle sea breeze"],
@@ -390,7 +390,7 @@ const trackerDef = {
 	"field-3": {
 		name: "Topics",
 		type: "ARRAY_OBJECT",
-		isDynamic: true,
+		presence: "DYNAMIC",
 		prompt: "",
 		defaultValue: "",
 		exampleValues: ["", "", ""],
@@ -398,7 +398,7 @@ const trackerDef = {
 			"field-4": {
 				name: "PrimaryTopic",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "**One- or two-word topic** describing main activity or focus of the scene.",
 				defaultValue: "<Updated Primary Topic if changed>",
 				exampleValues: ["Presentation", "Workout", "Relaxation"],
@@ -407,7 +407,7 @@ const trackerDef = {
 			"field-5": {
 				name: "EmotionalTone",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "**One- or two-word topic** describing dominant emotional atmosphere of the scene.",
 				defaultValue: "<Updated Emotional Tone if changed>",
 				exampleValues: ["Tense", "Focused", "Calm"],
@@ -416,7 +416,7 @@ const trackerDef = {
 			"field-6": {
 				name: "InteractionTheme",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "**One- or two-word topic** describing primary type of interactions or relationships in the scene.",
 				defaultValue: "<Updated Interaction Theme if changed>",
 				exampleValues: ["Professional", "Supportive", "Casual"],
@@ -427,7 +427,7 @@ const trackerDef = {
 	"field-7": {
 		name: "CharactersPresent",
 		type: "ARRAY",
-		isDynamic: true,
+		presence: "DYNAMIC",
 		prompt: "List all characters currently present in an array format.",
 		defaultValue: "<List of characters present if changed>",
 		exampleValues: ['["Emma Thompson", "James Miller", "Sophia Rodriguez"]', '["Daniel Lee", "Olivia Harris"]', '["Liam Johnson", "Emily Clark"]'],
@@ -436,7 +436,7 @@ const trackerDef = {
 	"field-8": {
 		name: "Characters",
 		type: "FOR_EACH_OBJECT",
-		isDynamic: true,
+		presence: "DYNAMIC",
 		prompt: "For each character, update the following details:",
 		defaultValue: "<Character Name>",
 		exampleValues: ['["Emma Thompson", "James Miller", "Sophia Rodriguez"]', '["Daniel Lee", "Olivia Harris"]', '["Liam Johnson", "Emily Clark"]'],
@@ -444,7 +444,7 @@ const trackerDef = {
 			"field-9": {
 				name: "Hair",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "Describe style only.",
 				defaultValue: "<Updated hair description if changed>",
 				exampleValues: ['["Shoulder-length blonde hair, styled straight", "Short black hair, neatly combed", "Long curly brown hair, pulled back into a low bun"]', '["Short brown hair, damp with sweat", "Medium-length red hair, tied up in a high ponytail"]', '["Short sandy blonde hair, slightly tousled", "Long wavy brown hair, loose and flowing"]'],
@@ -453,7 +453,7 @@ const trackerDef = {
 			"field-10": {
 				name: "Makeup",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "Describe current makeup.",
 				defaultValue: "<Updated makeup if changed>",
 				exampleValues: ['["Natural look with light foundation and mascara", "None", "Subtle eyeliner and nude lipstick"]', '["None", "Minimal, sweat-resistant mascara"]', '["None", "Sunscreen applied, no additional makeup"]'],
@@ -462,7 +462,7 @@ const trackerDef = {
 			"field-11": {
 				name: "Outfit",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: '**IMPORTANT!** List the complete outfit, including **underwear and accessories**, even if the character is undressed. **Underwear must always be included in the outfit description. If underwear is intentionally missing, specify this clearly (e.g. "No Bra", "No Panties").** Outfit should stay the same until changed for a new one.',
 				defaultValue: "<Full outfit description, even if removed including color, fabric, and style details; **always include underwear and accessories if present. If underwear is intentionally missing, specify clearly**>",
 				exampleValues: [
@@ -475,7 +475,7 @@ const trackerDef = {
 			"field-12": {
 				name: "StateOfDress",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "Describe how put-together or disheveled the character appears, including any removed clothing. Note where clothing items from outfit were discarded.",
 				defaultValue: "<Current state of dress if no update is needed. Note location where discarded outfit items are placed if character is undressed>",
 				exampleValues: ['["Professionally dressed, neat appearance", "Professionally dressed, attentive", "Professionally dressed, organized"]', '["Workout attire, lightly perspiring", "Workout attire, energized"]', '["Shirt and sandals removed, placed on beach towel", "Sundress and hat removed, placed on beach chair"]'],
@@ -484,7 +484,7 @@ const trackerDef = {
 			"field-13": {
 				name: "PostureAndInteraction",
 				type: "STRING",
-				isDynamic: true,
+				presence: "DYNAMIC",
 				prompt: "Describe physical posture, position relative to others or objects, and interactions.",
 				defaultValue: "<Current posture and interaction if no update is needed>",
 				exampleValues: ['["Standing at the podium, presenting slides, holding a laser pointer", "Sitting at the conference table, taking notes on a laptop", "Sitting next to James, reviewing printed documents"]', '["Lifting weights at the bench press, focused on form", "Running on the treadmill at a steady pace"]', '["Standing at the water\'s edge, feet in the surf", "Lying on a beach towel, sunbathing with eyes closed"]'],

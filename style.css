@@ -116,6 +116,10 @@
   margin-bottom: 10px;
   background-color: var(--black30a);
 }
+.tracker-prompt-maker .field-wrapper select {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper {
   display: flex;
   gap: 10px;
@@ -127,7 +131,7 @@
 }
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper,
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-type-wrapper,
-.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .static-dynamic-wrapper {
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .presence-wrapper {
   display: flex;
   flex-wrap: nowrap;
   gap: 5px;
@@ -136,7 +140,7 @@
 }
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper label,
 .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-type-wrapper label,
-.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .static-dynamic-wrapper label {
+.tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .presence-wrapper label {
   white-space: nowrap;
   overflow: hidden;
   flex-shrink: 0;
