@@ -67,7 +67,7 @@ export function getTracker(mesNum) {
  */
 export async function injectInlinePrompt(clearTracker = false) {
 	const inlinePrompt = clearTracker ? "" : getRequestPrompt(extensionSettings.inlineRequestPrompt, null, false);
-	debug("Injecting inline prompt:", inlinePrompt);
+	if(!clearTracker) debug("Injecting inline prompt:", inlinePrompt);
 	await setExtensionPrompt("inlineTrackerPrompt", inlinePrompt, 1, 0, true, EXTENSION_PROMPT_ROLES.SYSTEM);
 }
 
