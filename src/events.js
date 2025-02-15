@@ -13,7 +13,8 @@ import { TrackerPreviewManager } from "./ui/trackerPreviewManager.js";
  * Event handler for when the chat changes.
  * @param {object} args - The event arguments.
  */
-async function onChatChanged(args) {
+async function onChatChanged(args) { 
+	await clearInjects();
 	if (!await isEnabled()) return;
 	log("Chat changed:", args);
 	updateTrackerUI();
@@ -28,8 +29,9 @@ async function onChatChanged(args) {
  * @param {boolean} dryRun - Whether it's a dry run.
  */
 async function onGenerateAfterCommands(type, options, dryRun) {
-	await clearInjects();
-	if (!await isEnabled() || chat.length == 0 || (selected_group && !is_group_generating) || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate", "group_chat"].includes(type))) return;
+	const isEnabled = await isEnabled();
+	if(!isEnabled) await clearInjects();
+	if (!isEnabled || chat.length == 0 || (selected_group && !is_group_generating) || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate", "group_chat"].includes(type))) return;
 	log("GENERATION_AFTER_COMMANDS ", [type, options, dryRun]);
 	await prepareMessageGeneration(type, options, dryRun);
 	releaseGeneration();
