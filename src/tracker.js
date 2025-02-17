@@ -83,7 +83,7 @@ export async function injectTracker(tracker = "", position = 0) {
 		debug("Injecting tracker:", { tracker: trackerYAML, position });
 	}
 	position = Math.max(extensionSettings.minimumDepth, position);
-	await setExtensionPrompt("tracker", trackerYAML, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
+	await setExtensionPrompt("tracker", `<tracker>/n${trackerYAML}/n</tracker>`, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
 }
 
 /**
