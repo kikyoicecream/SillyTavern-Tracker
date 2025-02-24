@@ -152,6 +152,67 @@ export function updateTracker(tracker, updatedTrackerInput, backendObject, inclu
 	return formatOutput(finalTracker, outputFormat);
 }
 
+/**
+ * Checks if the given tracker is non-empty and contains at least one field that differs from the default. Uses Lodash for deep equality checks.
+ * @param {Object|string} trackerInput - The tracker object or YAML string.
+ * @param {Object} backendObject - The backend object defining the tracker structure.
+ * @param {string} includeFields - Which fields to include ('dynamic', 'static', 'all').
+ * @returns {boolean} - `true` if the tracker has at least one non-default field, otherwise `false`.
+ */
+export function trackerExists(trackerInput, backendObject) {
+	if(typeof trackerInput === "undefined" || trackerInput === null) return false;
+
+	// Convert YAML string to JSON if necessary
+	let tracker = typeof trackerInput === "string" ? yamlToJSON(trackerInput) : trackerInput;
+
+	// Get the default tracker structure
+	let defaultTracker = getDefaultTracker(backendObject, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
+
+	// Remove empty fields from both tracker and default to prevent false negatives
+	tracker = _.omitBy(tracker, _.isEmpty);
+	defaultTracker = _.omitBy(defaultTracker, _.isEmpty);
+
+	// If tracker is empty after cleaning, it doesn't exist
+	if (_.isEmpty(tracker)) return false;
+
+	// If all fields in tracker match the defaults, return false (it’s effectively empty)
+	if (_.isEqual(tracker, defaultTracker)) return false;
+
+	return true;
+}
+
+/**
+ * Cleans a tracker by removing fields that match the default values.
+ * @param {Object|string} trackerInput - The tracker object or YAML string.
+ * @param {Object} backendObject - The backend object defining the tracker structure.
+ * @param {string} includeFields - Which fields to include ('dynamic', 'static', 'all').
+ * @param {string} outputFormat - The desired output format ('json' or 'yaml').
+ * @param {boolean} preserveStructure - If true, replaces default values with placeholders (object keys remain).
+ * @returns {Object|string} - A cleaned tracker in the specified format.
+ */
+export function cleanTracker(trackerInput, backendObject, outputFormat = OUTPUT_FORMATS.JSON, preserveStructure = false) {
+	// Convert YAML to JSON if needed
+	const tracker = typeof trackerInput === "string" ? yamlToJSON(trackerInput) : trackerInput;
+
+	// Get the default tracker in JSON form
+	const defaultTracker = getDefaultTracker(backendObject, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
+
+	// 1) Recursively remove default values
+	let cleaned = removeDefaults(tracker, defaultTracker, preserveStructure);
+
+	// If the entire tracker was removed, return empty object or {} so we don't break usage
+	if (typeof cleaned === "undefined"){
+		if(outputFormat === OUTPUT_FORMATS.YAML){
+			return "";
+		} else if(outputFormat === OUTPUT_FORMATS.JSON){
+			return {};
+		}
+	}
+
+	// 2) Return in the specified output format
+	return formatOutput(cleaned, outputFormat);
+}
+
 /* Helper Functions */
 
 function getMaxExampleCount(backendObject) {
@@ -647,4 +708,71 @@ function cleanEmptyObjects(obj) {
 	}
 
 	return obj;
+}
+
+function removeDefaults(currentValue, defaultValue, preserveStructure) {
+	if (_.isArray(currentValue) && _.isArray(defaultValue)) {
+		return cleanArray(currentValue, defaultValue, preserveStructure);
+	}
+
+	if (_.isPlainObject(currentValue) && _.isPlainObject(defaultValue)) {
+		return cleanObject(currentValue, defaultValue, preserveStructure);
+	}
+
+	if (_.isEqual(currentValue, defaultValue)) {
+		return preserveStructure ? getEmptyEquivalent(currentValue) : undefined;
+	}
+
+	return currentValue;
+}
+
+function cleanArray(arr, defaultArr, preserveStructure) {
+	const cleanedItems = [];
+
+	for (let item of arr) {
+		const isDefaultItem = defaultArr.some((defItem) => _.isEqual(item, defItem));
+		if (isDefaultItem) continue;
+
+		cleanedItems.push(item);
+	}
+
+	if (cleanedItems.length === 0 && !preserveStructure) {
+		return undefined;
+	}
+
+	return cleanedItems;
+}
+
+function cleanObject(obj, defaultObj, preserveStructure) {
+	let hasRemainingKeys = false;
+	const result = {};
+
+	for (let key in obj) {
+		if (!obj.hasOwnProperty(key)) continue;
+
+		const defaultValForKey = defaultObj.hasOwnProperty(key) ? defaultObj[key] : getEmptyEquivalent(obj[key]);
+
+		const cleanedValue = removeDefaults(obj[key], defaultValForKey, preserveStructure);
+
+		if (typeof cleanedValue !== "undefined") {
+			hasRemainingKeys = true;
+			result[key] = cleanedValue;
+		} else if (preserveStructure) {
+			hasRemainingKeys = true;
+			result[key] = getEmptyEquivalent(obj[key]);
+		}
+	}
+
+	if (!hasRemainingKeys && !preserveStructure) {
+		return undefined;
+	}
+
+	return result;
+}
+
+function getEmptyEquivalent(value) {
+	if (_.isString(value)) return "";
+	if (_.isArray(value)) return [];
+	if (_.isObject(value)) return {};
+	return null;
 }

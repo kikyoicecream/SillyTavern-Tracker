@@ -1,6 +1,6 @@
 import { chat } from "../../../../../script.js";
 import { selected_group, is_group_generating } from "../../../../../scripts/group-chats.js";
-import { debug, getLastNonSystemMessageIndex, log } from "../lib/utils.js";
+import { debug, getLastMessageWithTracker, getLastNonSystemMessageIndex, log } from "../lib/utils.js";
 import { isEnabled } from "./settings/settings.js";
 import { prepareMessageGeneration, addTrackerToMessage, clearInjects } from "./tracker.js";
 import { releaseGeneration } from "../lib/interconnection.js";
@@ -95,13 +95,13 @@ export const eventHandlers = {
 };
 
 function updateTrackerUI() {
-	const lastMesId = getLastNonSystemMessageIndex();
-	const tracker = chat[lastMesId]?.tracker ?? {};
+	const lastMesWithTrackerId = getLastMessageWithTracker();
+	const tracker = chat[lastMesWithTrackerId]?.tracker ?? {};
 	if(Object.keys(tracker).length === 0) return;
 	const trackerData = getTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.JSON); // Get tracker data for the last message
 	const onSave = (updatedTracker) => {
-		saveTracker(updatedTracker, extensionSettings.trackerDef, lastMesId);
+		saveTracker(updatedTracker, extensionSettings.trackerDef, lastMesWithTrackerId);
 	};
 	const trackerInterface = new TrackerInterface();
-	trackerInterface.init(trackerData, lastMesId, onSave);
+	trackerInterface.init(trackerData, lastMesWithTrackerId, onSave);
 }

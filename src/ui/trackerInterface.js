@@ -2,7 +2,7 @@ import { animation_duration, chat } from "../../../../../../script.js";
 import { dragElement } from "../../../../../../scripts/RossAscends-mods.js";
 import { loadMovingUIState } from "../../../../../../scripts/power-user.js";
 import { extensionSettings } from "../../index.js";
-import { error, getPreviousNonSystemMessageIndex, getLastNonSystemMessageIndex, debug } from "../../lib/utils.js";
+import { error, getPreviousNonSystemMessageIndex, getLastNonSystemMessageIndex, debug, getLastMessageWithTracker } from "../../lib/utils.js";
 import { generateTracker } from "../generation.js";
 import { FIELD_INCLUDE_OPTIONS, getTracker, OUTPUT_FORMATS, saveTracker } from "../trackerDataHandler.js";
 import { TrackerContentRenderer } from './components/trackerContentRenderer.js';
@@ -231,7 +231,7 @@ export class TrackerInterface {
 
         // Tracker UI button event
         $("#tracker-ui-item").on("click", () => {
-            const lastMesId = getLastNonSystemMessageIndex();
+            const lastMesId = getLastMessageWithTracker();
             const mes = chat[lastMesId]?.tracker || {};
             const trackerData = getTracker(mes, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
             const onSave = async (updatedTracker) => {

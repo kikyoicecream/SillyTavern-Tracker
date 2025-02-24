@@ -2,12 +2,12 @@ import { saveChatConditional, chat, chat_metadata, setExtensionPrompt, extension
 
 import { hasPendingFileAttachment } from "../../../../../scripts/chats.js";
 import { getMessageTimeStamp } from "../../../../../scripts/RossAscends-mods.js";
-import { debug, getLastNonSystemMessageIndex, getNextNonSystemMessageIndex, getPreviousNonSystemMessageIndex, isSystemMessage, shouldGenerateTracker, shouldShowPopup, warn } from "../lib/utils.js";
+import { debug, getLastMessageWithTracker, getLastNonSystemMessageIndex, getNextNonSystemMessageIndex, getPreviousNonSystemMessageIndex, isSystemMessage, shouldGenerateTracker, shouldShowPopup, warn } from "../lib/utils.js";
 import { extensionSettings } from "../index.js";
 import { generateTracker, getRequestPrompt } from "./generation.js";
 import { generationModes, generationTargets } from "./settings/settings.js";
 import { jsonToYAML, yamlToJSON } from "../lib/ymlParser.js";
-import { FIELD_INCLUDE_OPTIONS, getDefaultTracker, OUTPUT_FORMATS, getTracker as getCleanTracker } from "./trackerDataHandler.js";
+import { FIELD_INCLUDE_OPTIONS, getDefaultTracker, OUTPUT_FORMATS, getTracker as getCleanTracker, trackerExists, cleanTracker } from "./trackerDataHandler.js";
 import { TrackerEditorModal } from "./ui/trackerEditorModal.js";
 import { TrackerPreviewManager } from "./ui/trackerPreviewManager.js";
 
@@ -78,12 +78,15 @@ export async function injectInlinePrompt(clearTracker = false) {
  */
 export async function injectTracker(tracker = "", position = 0) {
 	let trackerYAML = "";
-	if(tracker && tracker != "") {
-		trackerYAML = getCleanTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.YAML);
-		debug("Injecting tracker:", { tracker: trackerYAML, position });
+	if(trackerExists(tracker, extensionSettings.trackerDef) && tracker != "") {
+		trackerYAML = cleanTracker(tracker, extensionSettings.trackerDef, OUTPUT_FORMATS.YAML, false);
+		if(trackerYAML != "") {
+			debug("Injecting tracker:", { tracker: trackerYAML, position });
+			trackerYAML = `<tracker>\n${trackerYAML}\n</tracker>`;
+		}
 	}
 	position = Math.max(extensionSettings.minimumDepth, position);
-	await setExtensionPrompt("tracker", `<tracker>/n${trackerYAML}/n</tracker>`, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
+	await setExtensionPrompt("tracker", trackerYAML, 1, position, true, EXTENSION_PROMPT_ROLES.SYSTEM);
 }
 
 /**
@@ -299,7 +302,8 @@ async function handleStagedGeneration(type, options, dryRun) {
 	let position;
 
 	if ([ACTION_TYPES.CONTINUE, ACTION_TYPES.SWIPE, ACTION_TYPES.REGENERATE].includes(type)) {
-		if (!lastMes.tracker && shouldGenerateTracker(mesId, type)) {
+		const hasTracker = trackerExists(lastMes.tracker, extensionSettings.trackerDef);
+		if (!hasTracker && shouldGenerateTracker(mesId, type)) {
 			const previousMesId = getPreviousNonSystemMessageIndex(mesId);
 			lastMes.tracker = await generateTracker(previousMesId);
 			if (type !== ACTION_TYPES.REGENERATE) {
@@ -308,7 +312,7 @@ async function handleStagedGeneration(type, options, dryRun) {
 			}
 		}
 
-		if (type === ACTION_TYPES.REGENERATE && lastMes.tracker && Object.keys(lastMes.tracker).length !== 0) {
+		if (type === ACTION_TYPES.REGENERATE && hasTracker) {
 			chat_metadata.tracker.tempTrackerId = mesId;
 			chat_metadata.tracker.tempTracker = lastMes.tracker;
 			await saveChatConditional();
@@ -339,13 +343,9 @@ async function handleStagedGeneration(type, options, dryRun) {
 	}
 
 	if (!tracker) {
-		const lastMesReverseIndex = chat
-			.slice()
-			.reverse()
-			.findIndex((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0);
+		const lastMesWithTrackerIndex = getLastMessageWithTracker(chat, mesId);
 
-		if (lastMesReverseIndex !== -1) {
-			const lastMesWithTrackerIndex = chat.length - 1 - lastMesReverseIndex;
+		if (lastMesWithTrackerIndex !== null) {
 			const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 
 			tracker = getCleanTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, true, OUTPUT_FORMATS.JSON);
@@ -362,10 +362,8 @@ async function handleStagedGeneration(type, options, dryRun) {
 }
 
 async function showManualTrackerPopup(mesId = null) {
-	const lastMesWithTracker = chat
-		.slice()
-		.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
-		.pop();
+	const lastMesWithTrackerIndex = getLastMessageWithTracker(mesId);
+	const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 
 	let manualTracker;
 	if (lastMesWithTracker) {

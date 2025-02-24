@@ -1,6 +1,6 @@
 import { generateRaw, chat, characters, this_chid, getCharacterCardFields, name1 } from "../../../../../script.js";
 import { groups, selected_group } from "../../../../../scripts/group-chats.js";
-import { log, warn, debug, error, unescapeJsonString } from "../lib/utils.js";
+import { log, warn, debug, error, unescapeJsonString, getLastMessageWithTracker } from "../lib/utils.js";
 import { yamlToJSON } from "../lib/ymlParser.js";
 import { extensionSettings } from "../index.js";
 import { generationModes } from "./settings/settings.js";
@@ -57,10 +57,8 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 	if (extensionSettings.generationMode == generationModes.TWO_STAGE) tracker = await generateTwoStageTracker(mesNum, includedFields);
 	else tracker = await generateSingleStageTracker(mesNum, includedFields);
 
-	const lastMesWithTracker = chat
-		.slice(0, mesNum)
-		.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
-		.pop();
+	const lastMesWithTrackerIndex = getLastMessageWithTracker(mesNum);
+	const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 	let lastTracker = lastMesWithTracker ? lastMesWithTracker.tracker : getDefaultTracker(extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
 	return updateTracker(lastTracker, tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON, true);
 }
@@ -323,10 +321,8 @@ function getCurrentTracker(mesNum, includedFields) {
 	if (tracker && Object.keys(tracker).length !== 0) {
 		returnTracker = getTracker(tracker, extensionSettings.trackerDef, includedFields, false, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
 	} else {
-		const lastMesWithTracker = chat
-		.slice(0, mesNum + 1)
-		.filter((mes) => mes.tracker && Object.keys(mes.tracker).length !== 0)
-		.pop();
+		const lastMesWithTrackerIndex = getLastMessageWithTracker(mesNum + 1);
+		const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 		if (lastMesWithTracker) returnTracker = getTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, includedFields, false, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
 		else returnTracker = getDefaultTracker(extensionSettings.trackerDef, includedFields, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
 	}

@@ -165,25 +165,25 @@ export class TrackerContentRenderer {
 			// Ensure no minimum height is enforced
 			textarea.style.minHeight = "0px";
 			textarea.style.overflowY = "hidden";
-			textarea.style.height = "0px"; 
+			textarea.style.height = "0px";
 			textarea.style.height = textarea.scrollHeight + "px";
 		}
-		
+
 		// In your createAutoResizingTextarea function:
 		const createAutoResizingTextarea = (value, onChange) => {
 			const textarea = document.createElement("textarea");
 			textarea.className = "tracker-editor-textarea";
 			textarea.value = value || "";
-		
+
 			// Apply any inline styles if needed
 			textarea.style.minHeight = "0px";
 			textarea.style.overflowY = "hidden";
 			textarea.style.resize = "none"; // Prevent manual resizing if desired
-		
+
 			const adjust = () => adjustTextareaHeight(textarea);
-		
+
 			requestAnimationFrame(adjust);
-		
+
 			textarea.addEventListener("input", (event) => {
 				let newValue = event.target.value.replace(/"/g, "'");
 				if (newValue !== event.target.value) {
@@ -193,7 +193,7 @@ export class TrackerContentRenderer {
 				onChange(newValue);
 				adjust();
 			});
-		
+
 			return textarea;
 		};
 
@@ -807,8 +807,12 @@ export class TrackerContentRenderer {
 		}
 
 		// Apply string operations if any
-		if (operations.length > 0 && typeof value === "string") {
-			value = this.applyStringOperations(value, operations);
+		if (typeof value === "string") {
+			if (operations.length > 0) {
+				value = this.applyStringOperations(value, operations);
+			}
+			// Sanitize for HTML
+			value = value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
 
 		return value;
