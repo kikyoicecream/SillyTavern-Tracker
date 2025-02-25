@@ -120,7 +120,7 @@ async function sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseL
 	let newTracker;
 	try {
 		if(extensionSettings.trackerFormat == trackerFormat.JSON) tracker = unescapeJsonString(tracker);
-		const trackerContent = tracker.match(/<tracker>([\s\S]*?)<\/tracker>/);
+		const trackerContent = tracker.match(/<(?:tracker|Tracker)>([\s\S]*?)<\/(?:tracker|Tracker)>/);
 		let result = trackerContent ? trackerContent[1].trim() : null;
 		if(extensionSettings.trackerFormat == trackerFormat.YAML) result = yamlToJSON(result);
 		newTracker = JSON.parse(result);
