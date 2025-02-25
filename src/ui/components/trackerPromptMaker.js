@@ -204,7 +204,7 @@ export class TrackerPromptMaker {
 
 		// Presence Selector with label
 		const presenceLabel = $("<label>Presence:</label>");
-		const presenceKey = fieldData.presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC;
+		const presenceKey = fieldData.presence || "DYNAMIC";
 		const presenceSelector = $(`
             <select>
                 ${Object.entries(TrackerPromptMaker.FIELD_PRESENCE_OPTIONS)
@@ -334,7 +334,7 @@ export class TrackerPromptMaker {
 				parentFieldData.nestedFields[fieldId] = {
 					name: fieldData.name || "",
 					type: fieldData.type || "STRING",
-					presence: fieldData.presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC,
+					presence: fieldData.presence || "DYNAMIC",
 					prompt: fieldData.prompt || "",
 					defaultValue: fieldData.defaultValue || "",
 					exampleValues: [...fieldData.exampleValues],
@@ -347,7 +347,7 @@ export class TrackerPromptMaker {
 			this.backendObject[fieldId] = {
 				name: fieldData.name || "",
 				type: fieldData.type || "STRING",
-				presence: fieldData.presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC,
+				presence: fieldData.presence || "DYNAMIC",
 				prompt: fieldData.prompt || "",
 				defaultValue: fieldData.defaultValue || "",
 				exampleValues: [...fieldData.exampleValues],
@@ -464,7 +464,7 @@ export class TrackerPromptMaker {
 	selectPresence(presence, fieldId) {
 		const fieldData = this.getFieldDataById(fieldId);
 		if (fieldData) {
-			fieldData.presence = presence || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC;
+			fieldData.presence = presence || "DYNAMIC";
 			debug(`Selected presence: ${presence} for field ID: ${fieldId}`);
 		} else {
 			error(`Field with ID ${fieldId} not found during presence selection.`);
@@ -745,7 +745,7 @@ export class TrackerPromptMaker {
 				const fieldId = `field-${rebuildCounter++}`;
 
 				const fieldName = $fieldEl.find(".field-name-wrapper input").val() || "";
-				const presence = $fieldEl.find(".presence-wrapper select").val() || TrackerPromptMaker.FIELD_PRESENCE_OPTIONS.DYNAMIC;
+				const presence = $fieldEl.find(".presence-wrapper select").val() || "DYNAMIC";
 				const fieldType = $fieldEl.find(".field-type-wrapper select").val() || "STRING";
 				const prompt = $fieldEl.find(".prompt-wrapper textarea").val() || "";
 				const defaultValue = $fieldEl.find(".default-value-wrapper input").val() || "";
