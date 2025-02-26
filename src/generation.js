@@ -321,7 +321,7 @@ function getCurrentTracker(mesNum, includedFields) {
 	if (tracker && Object.keys(tracker).length !== 0) {
 		returnTracker = getTracker(tracker, extensionSettings.trackerDef, includedFields, false, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
 	} else {
-		const lastMesWithTrackerIndex = getLastMessageWithTracker(mesNum + 1);
+		const lastMesWithTrackerIndex = getLastMessageWithTracker(mesNum);
 		const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 		if (lastMesWithTracker) returnTracker = getTracker(lastMesWithTracker.tracker, extensionSettings.trackerDef, includedFields, false, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
 		else returnTracker = getDefaultTracker(extensionSettings.trackerDef, includedFields, OUTPUT_FORMATS[extensionSettings.trackerFormat]);
