@@ -444,7 +444,7 @@ export async function addTrackerToMessage(mesId) {
 	} else {
 		if(isSystemMessage(mesId)) return;
 		const tempId = chat_metadata?.tracker?.tempTrackerId ?? null;
-		if(chat_metadata.tracker.cmdTrackerOverride) {
+		if(chat_metadata?.tracker?.cmdTrackerOverride) {
 			saveTrackerToMessage(mesId, chat_metadata.tracker.cmdTrackerOverride);
 		} else if (tempId != null) {
 			debug("Checking for temp tracker match", { mesId, tempId });
