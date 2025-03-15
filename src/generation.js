@@ -57,6 +57,8 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 	if (extensionSettings.generationMode == generationModes.TWO_STAGE) tracker = await generateTwoStageTracker(mesNum, includedFields);
 	else tracker = await generateSingleStageTracker(mesNum, includedFields);
 
+	if (!tracker) return null;
+
 	const lastMesWithTrackerIndex = getLastMessageWithTracker(mesNum);
 	const lastMesWithTracker = chat[lastMesWithTrackerIndex];
 	let lastTracker = lastMesWithTracker ? lastMesWithTracker.tracker : getDefaultTracker(extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, OUTPUT_FORMATS.JSON);
