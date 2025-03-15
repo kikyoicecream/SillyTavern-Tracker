@@ -431,18 +431,19 @@ export async function addTrackerToMessage(mesId) {
 	};
 
 	if (extensionSettings.generationMode === generationModes.INLINE) {
-		if (getNextNonSystemMessageIndex(chat_metadata.tracker.inlineTrackerId) === mesId) {
+		const tempId = chat_metadata?.tracker?.inlineTrackerId ?? null;
+		if (getNextNonSystemMessageIndex(tempId) === mesId) {
 			await extractAndSaveInlineTracker(mesId, true);
 			await removeInlineTrackers(true);
 		}
-		chat_metadata.tracker.inlineTrackerId = null;
+		if(chat_metadata.tracker) chat_metadata.tracker.inlineTrackerId = null;
 		await saveChatConditional();
 
 		if (manageStopButton) activateSendButtons();
 		return;
 	} else {
 		if(isSystemMessage(mesId)) return;
-		const tempId = chat_metadata.tracker.tempTrackerId;
+		const tempId = chat_metadata?.tracker?.tempTrackerId ?? null;
 		if(chat_metadata.tracker.cmdTrackerOverride) {
 			saveTrackerToMessage(mesId, chat_metadata.tracker.cmdTrackerOverride);
 		} else if (tempId != null) {
