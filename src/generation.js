@@ -128,6 +128,7 @@ async function sendGenerateTrackerRequest(systemPrompt, requestPrompt, responseL
 		newTracker = JSON.parse(result);
 	} catch (e) {
 		error("Failed to parse tracker:", tracker, e);
+		toastr.error("Failed to parse the generated tracker. Make sure your token count is not low or set the response length override.");
 	}
 
 	debug("Parsed tracker:", { newTracker });
