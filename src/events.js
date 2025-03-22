@@ -17,7 +17,7 @@ async function onChatChanged(args) {
 	await clearInjects();
 	if (!await isEnabled()) return;
 	log("Chat changed:", args);
-	updateTrackerUI();
+	updateTrackerInterface();
 	//TrackerPreviewManager.init();
 	releaseGeneration();
 }
@@ -70,7 +70,7 @@ async function onCharacterMessageRendered(mesId) {
 	log("CHARACTER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
-	updateTrackerUI();
+	updateTrackerInterface();
 }
 
 /**
@@ -81,7 +81,7 @@ async function onUserMessageRendered(mesId) {
 	log("USER_MESSAGE_RENDERED");
 	await addTrackerToMessage(mesId);
 	releaseGeneration();
-	updateTrackerUI();
+	updateTrackerInterface();
 }
 
 async function generateAfterCombinePrompts(prompt) {
@@ -98,7 +98,7 @@ export const eventHandlers = {
 	generateAfterCombinePrompts
 };
 
-function updateTrackerUI() {
+function updateTrackerInterface() {
 	const lastMesWithTrackerId = getLastMessageWithTracker();
 	const tracker = chat[lastMesWithTrackerId]?.tracker ?? {};
 	if(Object.keys(tracker).length === 0) return;

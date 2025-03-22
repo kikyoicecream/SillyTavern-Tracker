@@ -47,16 +47,16 @@ export class TrackerInterface {
         // Use the zoomed_avatar_template
         const template = $("#zoomed_avatar_template").html();
         const controlBarHtml = `<div class="panelControlBar flex-container">
-            <div id="trackerUIheader" class="fa-solid fa-grip drag-grabber hoverglow"></div>
-            <div id="trackerUIClose" class="fa-solid fa-circle-xmark hoverglow dragClose"></div>
+            <div id="trackerInterfaceheader" class="fa-solid fa-grip drag-grabber hoverglow"></div>
+            <div id="trackerInterfaceClose" class="fa-solid fa-circle-xmark hoverglow dragClose"></div>
         </div>`;
-        const editorHeader = `<div id="trackerUIHeader">Tracker</div>`;
-        const editorContainer = `<div id="trackerUIContents" class="scrollY"></div>`;
-        const editorFooter = `<div id="trackerUIFooter">
-            <button id="trackerUIViewButton" class="menu_button menu_button_default interactable" tabindex="0">View</button>
-            <button id="trackerUIEditButton" class="menu_button menu_button_default interactable" tabindex="0">Edit</button>
-            <button id="trackerUIRegenerateTracker" class="menu_button menu_button_default interactable" tabindex="0">Regenerate</button>
-            <select id="trackerUIRegenOptions" class="tracker-regen-options">
+        const editorHeader = `<div id="trackerInterfaceHeader">Tracker</div>`;
+        const editorContainer = `<div id="trackerInterfaceContents" class="scrollY"></div>`;
+        const editorFooter = `<div id="trackerInterfaceFooter">
+            <button id="trackerInterfaceViewButton" class="menu_button menu_button_default interactable" tabindex="0">View</button>
+            <button id="trackerInterfaceEditButton" class="menu_button menu_button_default interactable" tabindex="0">Edit</button>
+            <button id="trackerInterfaceRegenerateTracker" class="menu_button menu_button_default interactable" tabindex="0">Regenerate</button>
+            <select id="trackerInterfaceRegenOptions" class="tracker-regen-options">
                 <option value="no-static">No Static Fields</option>
                 <option value="all-fields">All Fields</option>
                 <option value="static-only">Static Only</option>
@@ -74,7 +74,7 @@ export class TrackerInterface {
         dragElement(newElement);
 
         // Close button event
-        $("#trackerUIClose")
+        $("#trackerInterfaceClose")
             .off("click")
             .on("click", () => {
                 this.close();
@@ -82,12 +82,12 @@ export class TrackerInterface {
 
         // Store references
         this.container = newElement;
-        this.editorHeader = newElement.find('#trackerUIHeader');
-        this.contentArea = newElement.find('#trackerUIContents');
-        this.viewButton = newElement.find('#trackerUIViewButton');
-        this.editButton = newElement.find('#trackerUIEditButton');
-        this.regenerateButton = newElement.find('#trackerUIRegenerateTracker');
-        this.regenOptions = newElement.find('#trackerUIRegenOptions');
+        this.editorHeader = newElement.find('#trackerInterfaceHeader');
+        this.contentArea = newElement.find('#trackerInterfaceContents');
+        this.viewButton = newElement.find('#trackerInterfaceViewButton');
+        this.editButton = newElement.find('#trackerInterfaceEditButton');
+        this.regenerateButton = newElement.find('#trackerInterfaceRegenerateTracker');
+        this.regenOptions = newElement.find('#trackerInterfaceRegenOptions');
 
         // Event handlers for buttons
         this.viewButton.on('click', () => this.switchMode('view'));
@@ -219,7 +219,7 @@ export class TrackerInterface {
      */
     static initializeTrackerButtons() {
         // Add Tracker button to the extensions menu
-        const trackerUIButton = $(`
+        const trackerInterfaceButton = $(`
             <div class="extension_container interactable" id="tracker_ui_container" tabindex="0">
                 <div id="tracker-ui-item" class="list-group-item flex-container flexGap5 interactable" title="Open Tracker Interface" tabindex="0">
                     <div class="extensionsMenuExtensionButton fa-solid fa-code"></div>
@@ -227,7 +227,7 @@ export class TrackerInterface {
                 </div>
             </div>
         `);
-        $("#extensionsMenu").append(trackerUIButton);
+        $("#extensionsMenu").append(trackerInterfaceButton);
 
         // Tracker UI button event
         $("#tracker-ui-item").on("click", () => {
