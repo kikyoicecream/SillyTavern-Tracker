@@ -422,9 +422,11 @@ export async function addTrackerToMessage(mesId) {
 	const saveTrackerToMessage = async (mesId, tracker) => {
 		debug("Adding tracker to message:", { mesId, mes: chat[mesId], tracker });
 		chat[mesId].tracker = tracker;
-		chat_metadata.tracker.tempTrackerId = null;
-		chat_metadata.tracker.tempTracker = null;
-		chat_metadata.tracker.cmdTrackerOverride = null;
+		if(typeof chat_metadata.tracker !== "undefined"){
+			chat_metadata.tracker.tempTrackerId = null;
+			chat_metadata.tracker.tempTracker = null;
+			chat_metadata.tracker.cmdTrackerOverride = null;
+		}
 		await saveChatConditional();
 		TrackerPreviewManager.updatePreview(mesId);
 
