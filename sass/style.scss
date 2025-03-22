@@ -85,6 +85,9 @@
 
 .tracker-prompt-maker-modal {
 	width: var(--sheldWidth) !important;
+	@media screen and (max-width: 1000px) {
+		width: 100% !important;
+	}
 }
 
 .tracker-prompt-maker {
@@ -176,6 +179,25 @@
 				margin: 0;
 			}
 		}
+
+		@media (max-width: 650px) {
+			.name-dynamic-type-wrapper {
+				flex-wrap: wrap !important;
+				row-gap: 0px !important;
+				
+				.field-name-wrapper {
+					width: calc(100% - 30px) !important;
+				}
+
+				.field-name-wrapper, .field-type-wrapper, .presence-wrapper {
+					flex-grow: 1 !important;
+				}
+			}
+
+			.default-value-wrapper{
+				flex-wrap: wrap !important;
+			}
+		}
 	}
 
 	.buttons-wrapper {
@@ -191,6 +213,11 @@
 			&:hover {
 				background-color: var(--white30a);
 			}
+		}
+		
+
+		@media (max-width: 650px) {
+			flex-wrap: wrap;
 		}
 	}
 

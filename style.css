@@ -95,6 +95,11 @@
 .tracker-prompt-maker-modal {
   width: var(--sheldWidth) !important;
 }
+@media screen and (max-width: 1000px) {
+  .tracker-prompt-maker-modal {
+    width: 100% !important;
+  }
+}
 
 .tracker-prompt-maker {
   text-align: left;
@@ -175,6 +180,21 @@
 .tracker-prompt-maker .field-wrapper .buttons-wrapper button {
   margin: 0;
 }
+@media (max-width: 650px) {
+  .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper {
+    flex-wrap: wrap !important;
+    row-gap: 0px !important;
+  }
+  .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper {
+    width: calc(100% - 30px) !important;
+  }
+  .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-name-wrapper, .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .field-type-wrapper, .tracker-prompt-maker .field-wrapper .name-dynamic-type-wrapper .presence-wrapper {
+    flex-grow: 1 !important;
+  }
+  .tracker-prompt-maker .field-wrapper .default-value-wrapper {
+    flex-wrap: wrap !important;
+  }
+}
 .tracker-prompt-maker .buttons-wrapper {
   display: flex;
   flex-wrap: nowrap;
@@ -187,6 +207,11 @@
 }
 .tracker-prompt-maker .buttons-wrapper button:hover {
   background-color: var(--white30a);
+}
+@media (max-width: 650px) {
+  .tracker-prompt-maker .buttons-wrapper {
+    flex-wrap: wrap;
+  }
 }
 .tracker-prompt-maker .drag-handle {
   cursor: move; /* Changes the cursor to indicate draggable area */
