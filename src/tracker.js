@@ -412,6 +412,7 @@ async function sendUserMessage(type, options, dryRun) {
 export async function addTrackerToMessage(mesId) {
 	const manageStopButton = $("#mes_stop").css("display") === "none";
 	if (manageStopButton) deactivateSendButtons();
+	try {
 
 	/**
 	 * Saves the tracker to the message and updates the chat metadata.
@@ -461,6 +462,9 @@ export async function addTrackerToMessage(mesId) {
 				await saveTrackerToMessage(mesId, tracker);
 			}
 		}
+	}
+	} catch (e) {
+		if (manageStopButton) activateSendButtons();
 	}
 }
 
