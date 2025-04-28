@@ -195,7 +195,7 @@ function getConnectionProfiles() {
 }
 
 function updateConnectionProfileDropdown() {
-	const connectionProfileSelect = $("#tracker_generation_connection_profile");
+	const connectionProfileSelect = $("#tracker_connection_profile");
 	const connectionProfiles = getConnectionProfiles()
 	debug("connections profiles found", connectionProfiles)
 	for (const profileName of connectionProfiles) {
@@ -230,7 +230,7 @@ function getCompletionPresets() {
 }
 
 function updateCompletionPresetsDropdown() {
-	const completionPresetsSelect = $("#tracker_generation_completion_preset");
+	const completionPresetsSelect = $("#tracker_completion_preset");
 	const completionPresets = getCompletionPresets()
 	debug("completion presets found", completionPresets)
 	for (const presetName of completionPresets) {
