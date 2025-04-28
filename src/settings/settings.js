@@ -198,7 +198,7 @@ function updateConnectionProfileDropdown() {
 	const connectionProfileSelect = $("#tracker_connection_profile");
 	const connectionProfiles = getConnectionProfiles()
 	debug("connections profiles found", connectionProfiles)
-	completionPresetsSelect.empty()
+	connectionProfileSelect.empty()
 	connectionProfileSelect.append($("<option>").val("current").text("Same as current"))
 	for (const profileName of connectionProfiles) {
 		const option = $("<option>").val(profileName).text(profileName);
@@ -236,7 +236,7 @@ function updateCompletionPresetsDropdown() {
 	const completionPresets = getCompletionPresets()
 	debug("completion presets found", completionPresets)
 	completionPresetsSelect.empty()
-	completionPresets.append($("<option>").val("current").text("Same as current"))
+	completionPresetsSelect.append($("<option>").val("current").text("Same as current"))
 	for (const presetName of completionPresets) {
 		const option = $("<option>").val(presetName).text(presetName);
 
