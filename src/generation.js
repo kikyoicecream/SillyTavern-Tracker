@@ -61,17 +61,17 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 	const preselectedPreset = presetManager.getSelectedPreset();
 	const preselectedProfile = connectionManagerSettings.profiles.find(x => x.id === connectionManagerSettings.selectedProfile).name;
 
-	if (extensionSettings.selectedProfile !== "current") {
-		debug("overriding connection profile", extensionSettings.selectedProfile);
-		await ctx.executeSlashCommandsWithOptions(`/profile ${extensionSettings.selectedProfile}`)
-	}
-
-	if (extensionSettings.selectedCompletionPreset !== "current") {
-		debug("overriding completion preset", extensionSettings.selectedCompletionPreset);
-		presetManager.selectPreset(extensionSettings.selectedCompletionPreset)
-	}
-
 	try {
+		if (extensionSettings.selectedProfile !== "current") {
+			debug("overriding connection profile", extensionSettings.selectedProfile);
+			await ctx.executeSlashCommandsWithOptions(`/profile ${extensionSettings.selectedProfile}`)
+		}
+	
+		if (extensionSettings.selectedCompletionPreset !== "current") {
+			debug("overriding completion preset", extensionSettings.selectedCompletionPreset);
+			presetManager.selectPreset(extensionSettings.selectedCompletionPreset)
+		}
+	
 		let tracker;
 		if (extensionSettings.generationMode == generationModes.TWO_STAGE) tracker = await generateTwoStageTracker(mesNum, includedFields);
 		else tracker = await generateSingleStageTracker(mesNum, includedFields);
