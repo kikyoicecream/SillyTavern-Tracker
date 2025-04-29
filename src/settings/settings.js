@@ -190,16 +190,16 @@ function registerSettingsListeners() {
 
 function getConnectionProfiles() {
 	const ctx = getContext();
-	const connectionProfileNames = ctx.extensionSettings["connectionManager"].profiles.map(x => x.name);
+	const connectionProfileNames = ctx.extensionSettings.connectionManager.profiles.map(x => x.name);
 	return connectionProfileNames;
 }
 
 function updateConnectionProfileDropdown() {
 	const connectionProfileSelect = $("#tracker_connection_profile");
-	const connectionProfiles = getConnectionProfiles()
-	debug("connections profiles found", connectionProfiles)
-	connectionProfileSelect.empty()
-	connectionProfileSelect.append($("<option>").val("current").text("Same as current"))
+	const connectionProfiles = getConnectionProfiles();
+	debug("connections profiles found", connectionProfiles);
+	connectionProfileSelect.empty();
+	connectionProfileSelect.append($("<option>").val("current").text("Same as current"));
 	for (const profileName of connectionProfiles) {
 		const option = $("<option>").val(profileName).text(profileName);
 
@@ -207,13 +207,21 @@ function updateConnectionProfileDropdown() {
 			option.attr("selected", "selected");
 		}
 
-		connectionProfileSelect.append(option)
+		connectionProfileSelect.append(option);
 	}
 }
 
 function onConnectionProfileSelectChange() {
 	const selectedProfile = $(this).val();
-	extensionSettings.selectedProfile = selectedProfile
+	extensionSettings.selectedProfile = selectedProfile;
+	let selectedProfileApi = null;
+	if(selectedProfile !== "current") {
+		selectedProfileApi = getContext().extensionSettings.connectionManager.profiles.find(x => x.name === selectedProfile).mode;
+		if(selectedProfileApi === "tc") selectedProfileApi = "textgenerationwebui";
+		if(selectedProfileApi === "cc") selectedProfileApi = "openai";
+	
+	}
+	extensionSettings.selectedProfileApi = selectedProfileApi;
 
 	debug("Selected profile:", { selectedProfile, extensionSettings });
 
@@ -227,16 +235,23 @@ function onConnectionProfileSelectChange() {
 
 function getCompletionPresets() {
 	const ctx = getContext();
-	const presetNames = ctx.getPresetManager().getAllPresets();
-	return presetNames;
+	let presetNames;
+	if (extensionSettings.selectedProfile !== "current") {
+		presetNames = ctx.getPresetManager().getPresetList(extensionSettings.selectedProfileApi).preset_names;
+	} else {
+		presetNames = ctx.getPresetManager().getPresetList().preset_names;
+	}
+
+	if (Array.isArray(presetNames)) return presetNames
+	return Object.keys(presetNames);
 }
 
 function updateCompletionPresetsDropdown() {
 	const completionPresetsSelect = $("#tracker_completion_preset");
-	const completionPresets = getCompletionPresets()
-	debug("completion presets found", completionPresets)
-	completionPresetsSelect.empty()
-	completionPresetsSelect.append($("<option>").val("current").text("Same as current"))
+	const completionPresets = getCompletionPresets();
+	debug("completion presets found", completionPresets);
+	completionPresetsSelect.empty();
+	completionPresetsSelect.append($("<option>").val("current").text("Same as current"));
 	for (const presetName of completionPresets) {
 		const option = $("<option>").val(presetName).text(presetName);
 
@@ -244,13 +259,13 @@ function updateCompletionPresetsDropdown() {
 			option.attr("selected", "selected");
 		}
 
-		completionPresetsSelect.append(option)
+		completionPresetsSelect.append(option);
 	}
 }
 
 function onCompletionPresetSelectChange() {
 	const selectedCompletionPreset = $(this).val();
-	extensionSettings.selectedCompletionPreset = selectedCompletionPreset
+	extensionSettings.selectedCompletionPreset = selectedCompletionPreset;
 
 	debug("Selected completion preset:", { selectedCompletionPreset, extensionSettings });
 

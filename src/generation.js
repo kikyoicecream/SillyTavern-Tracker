@@ -64,17 +64,21 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 	try {
 		if (extensionSettings.selectedProfile !== "current") {
 			debug("overriding connection profile", extensionSettings.selectedProfile);
-			await ctx.executeSlashCommandsWithOptions(`/profile ${extensionSettings.selectedProfile}`)
+			await ctx.executeSlashCommandsWithOptions(`/profile ${extensionSettings.selectedProfile}`);
 		}
 	
 		if (extensionSettings.selectedCompletionPreset !== "current") {
 			debug("overriding completion preset", extensionSettings.selectedCompletionPreset);
-			presetManager.selectPreset(extensionSettings.selectedCompletionPreset)
+			presetManager.selectPreset(extensionSettings.selectedCompletionPreset);
 		}
 	
 		let tracker;
 		if (extensionSettings.generationMode == generationModes.TWO_STAGE) tracker = await generateTwoStageTracker(mesNum, includedFields);
 		else tracker = await generateSingleStageTracker(mesNum, includedFields);
+
+		debug("removing connection profile & completion preset override. Back to", preselectedProfile, preselectedPreset);
+		presetManager.selectPreset(preselectedPreset);
+		await ctx.executeSlashCommandsWithOptions(`/profile ${preselectedProfile}`);
 
 		if (!tracker) return null;
 
@@ -86,9 +90,6 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 		error("Failed to generate tracker", e);
 		toastr.error("Failed to generate tracker. Make sure your selected connection profile and completion preset are valid and working");
 	}
-	debug("removing connection profile & completion preset override");
-	presetManager.selectPreset(preselectedPreset);
-	await ctx.executeSlashCommandsWithOptions(`/profile ${preselectedProfile}`);
 }
 
 /**
