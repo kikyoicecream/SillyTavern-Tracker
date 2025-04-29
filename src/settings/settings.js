@@ -224,7 +224,7 @@ function onConnectionProfileSelectChange() {
 	extensionSettings.selectedProfileApi = selectedProfileApi;
 
 	debug("Selected profile:", { selectedProfile, extensionSettings });
-
+	extensionSettings.selectedCompletionPreset = "current";
 	setSettingsInitialValues();
 	saveSettingsDebounced();
 }
@@ -251,7 +251,7 @@ function updateCompletionPresetsDropdown() {
 	const completionPresets = getCompletionPresets();
 	debug("completion presets found", completionPresets);
 	completionPresetsSelect.empty();
-	completionPresetsSelect.append($("<option>").val("current").text("Same as current"));
+	completionPresetsSelect.append($("<option>").val("current").text("Use connection profile Default"));
 	for (const presetName of completionPresets) {
 		const option = $("<option>").val(presetName).text(presetName);
 

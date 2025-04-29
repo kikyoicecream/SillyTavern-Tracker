@@ -76,9 +76,15 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 		if (extensionSettings.generationMode == generationModes.TWO_STAGE) tracker = await generateTwoStageTracker(mesNum, includedFields);
 		else tracker = await generateSingleStageTracker(mesNum, includedFields);
 
-		debug("removing connection profile & completion preset override. Back to", preselectedProfile, preselectedPreset);
-		presetManager.selectPreset(preselectedPreset);
-		await ctx.executeSlashCommandsWithOptions(`/profile ${preselectedProfile}`);
+		if (extensionSettings.selectedProfile !== "current") {
+			debug("removing connection profile override back to ", preselectedProfile)
+			await ctx.executeSlashCommandsWithOptions(`/profile ${preselectedProfile}`);
+		}
+
+		if (extensionSettings.selectedCompletionPreset !== "current") {
+			debug("removing completion preset override back to ", preselectedPreset)
+			presetManager.selectPreset(preselectedPreset);
+		}
 
 		if (!tracker) return null;
 
