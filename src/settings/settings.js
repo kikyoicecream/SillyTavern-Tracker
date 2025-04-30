@@ -1,4 +1,6 @@
 import { saveSettingsDebounced } from "../../../../../../script.js";
+import { getContext } from '../../../../../../scripts/extensions.js';
+
 import { extensionFolderPath, extensionSettings } from "../../index.js";
 import { error, debug, toTitleCase } from "../../lib/utils.js";
 import { defaultSettings, generationModes, generationTargets } from "./defaultSettings.js";
@@ -98,6 +100,8 @@ async function loadSettingsUI() {
 function setSettingsInitialValues() {
 	// Populate presets dropdown
 	updatePresetDropdown();
+	updateConnectionProfileDropdown();
+	updateCompletionPresetsDropdown();
 	updatePopupDropdown();
 	updateFieldVisibility(extensionSettings.generationMode);
 
@@ -140,6 +144,8 @@ function setSettingsInitialValues() {
 function registerSettingsListeners() {
 	// Preset management
 	$("#tracker_preset_select").on("change", onPresetSelectChange);
+	$("#tracker_connection_profile").on("change", onConnectionProfileSelectChange);
+	$("#tracker_completion_preset").on("change", onCompletionPresetSelectChange);
 	$("#tracker_preset_new").on("click", onPresetNewClick);
 	$("#tracker_preset_save").on("click", onPresetSaveClick);
 	$("#tracker_preset_rename").on("click", onPresetRenameClick);
@@ -176,6 +182,95 @@ function registerSettingsListeners() {
 
 	$("#tracker_prompt_maker").on("click", onTrackerPromptMakerClick);
 	$("#tracker_reset_presets").on("click", onTrackerPromptResetClick);
+}
+
+// #endregion
+
+// #region Connection Profile Override
+
+function getConnectionProfiles() {
+	const ctx = getContext();
+	const connectionProfileNames = ctx.extensionSettings.connectionManager.profiles.map(x => x.name);
+	return connectionProfileNames;
+}
+
+function updateConnectionProfileDropdown() {
+	const connectionProfileSelect = $("#tracker_connection_profile");
+	const connectionProfiles = getConnectionProfiles();
+	debug("connections profiles found", connectionProfiles);
+	connectionProfileSelect.empty();
+	connectionProfileSelect.append($("<option>").val("current").text("Same as current"));
+	for (const profileName of connectionProfiles) {
+		const option = $("<option>").val(profileName).text(profileName);
+
+		if (profileName === extensionSettings.selectedProfile) {
+			option.attr("selected", "selected");
+		}
+
+		connectionProfileSelect.append(option);
+	}
+}
+
+function onConnectionProfileSelectChange() {
+	const selectedProfile = $(this).val();
+	extensionSettings.selectedProfile = selectedProfile;
+	let selectedProfileApi = null;
+	if(selectedProfile !== "current") {
+		selectedProfileApi = getContext().extensionSettings.connectionManager.profiles.find(x => x.name === selectedProfile).mode;
+		if(selectedProfileApi === "tc") selectedProfileApi = "textgenerationwebui";
+		if(selectedProfileApi === "cc") selectedProfileApi = "openai";
+	
+	}
+	extensionSettings.selectedProfileApi = selectedProfileApi;
+
+	debug("Selected profile:", { selectedProfile, extensionSettings });
+	extensionSettings.selectedCompletionPreset = "current";
+	setSettingsInitialValues();
+	saveSettingsDebounced();
+}
+
+// #endregion
+
+// #region Completion Preset Override
+
+function getCompletionPresets() {
+	const ctx = getContext();
+	let presetNames;
+	if (extensionSettings.selectedProfile !== "current") {
+		presetNames = ctx.getPresetManager().getPresetList(extensionSettings.selectedProfileApi).preset_names;
+	} else {
+		presetNames = ctx.getPresetManager().getPresetList().preset_names;
+	}
+
+	if (Array.isArray(presetNames)) return presetNames
+	return Object.keys(presetNames);
+}
+
+function updateCompletionPresetsDropdown() {
+	const completionPresetsSelect = $("#tracker_completion_preset");
+	const completionPresets = getCompletionPresets();
+	debug("completion presets found", completionPresets);
+	completionPresetsSelect.empty();
+	completionPresetsSelect.append($("<option>").val("current").text("Use connection profile Default"));
+	for (const presetName of completionPresets) {
+		const option = $("<option>").val(presetName).text(presetName);
+
+		if (presetName === extensionSettings.selectedCompletionPreset) {
+			option.attr("selected", "selected");
+		}
+
+		completionPresetsSelect.append(option);
+	}
+}
+
+function onCompletionPresetSelectChange() {
+	const selectedCompletionPreset = $(this).val();
+	extensionSettings.selectedCompletionPreset = selectedCompletionPreset;
+
+	debug("Selected completion preset:", { selectedCompletionPreset, extensionSettings });
+
+	setSettingsInitialValues();
+	saveSettingsDebounced();
 }
 
 // #endregion
