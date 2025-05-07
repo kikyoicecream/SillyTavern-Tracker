@@ -100,8 +100,7 @@ async function loadSettingsUI() {
 function setSettingsInitialValues() {
 	// Populate presets dropdown
 	updatePresetDropdown();
-	updateConnectionProfileDropdown();
-	updateCompletionPresetsDropdown();
+	initializeOverridesDropdowns();
 	updatePopupDropdown();
 	updateFieldVisibility(extensionSettings.generationMode);
 
@@ -182,6 +181,13 @@ function registerSettingsListeners() {
 
 	$("#tracker_prompt_maker").on("click", onTrackerPromptMakerClick);
 	$("#tracker_reset_presets").on("click", onTrackerPromptResetClick);
+
+	const {
+		eventSource,
+		event_types,
+	} = getContext();
+
+	eventSource.on(event_types.CONNECTION_PROFILE_LOADED, onMainSettingsConnectionProfileChange);
 }
 
 // #endregion
@@ -211,22 +217,64 @@ function updateConnectionProfileDropdown() {
 	}
 }
 
+function initializeOverridesDropdowns() {
+	try {
+		updateConnectionProfileDropdown();
+		const ctx = getContext();
+		const connectionManager = ctx.extensionSettings.connectionManager;
+	
+		let actualSelectedProfile;
+		if(extensionSettings.selectedProfile === 'current') {
+			actualSelectedProfile = connectionManager.profiles.find(x => x.id === connectionManager.selectedProfile);
+			extensionSettings.selectedProfileApi = actualSelectedProfile.api;
+			extensionSettings.selectedProfileMode = actualSelectedProfile.mode;
+	
+		} else {
+			actualSelectedProfile = connectionManager.profiles.find(x => x.name === extensionSettings.selectedProfile);
+			extensionSettings.selectedProfileApi = actualSelectedProfile.api;
+			extensionSettings.selectedProfileMode = actualSelectedProfile.mode;
+			}
+		debug("Selected profile:", { actualSelectedProfile, extensionSettings });
+		updateCompletionPresetsDropdown();
+	} catch(e) {
+		error(e)
+		toastr.error('Failed to initialize overrides presets');
+
+	}
+	saveSettingsDebounced();
+}
+
 function onConnectionProfileSelectChange() {
 	const selectedProfile = $(this).val();
 	extensionSettings.selectedProfile = selectedProfile;
-	let selectedProfileApi = null;
-	if(selectedProfile !== "current") {
-		selectedProfileApi = getContext().extensionSettings.connectionManager.profiles.find(x => x.name === selectedProfile).mode;
-		if(selectedProfileApi === "tc") selectedProfileApi = "textgenerationwebui";
-		if(selectedProfileApi === "cc") selectedProfileApi = "openai";
-	
+	const ctx = getContext();
+	const connectionManager = ctx.extensionSettings.connectionManager
+
+	let actualSelectedProfile;
+
+	if(selectedProfile === 'current') {
+		actualSelectedProfile = connectionManager.profiles.find(x => x.id === connectionManager.selectedProfile);
+		extensionSettings.selectedProfileApi = actualSelectedProfile.api;
+		extensionSettings.selectedProfileMode = actualSelectedProfile.mode;
+
+	} else {
+		actualSelectedProfile = connectionManager.profiles.find(x => x.name === selectedProfile);
+		extensionSettings.selectedProfileApi = actualSelectedProfile.api;
+		extensionSettings.selectedProfileMode = actualSelectedProfile.mode;
 	}
-	extensionSettings.selectedProfileApi = selectedProfileApi;
+
 
 	debug("Selected profile:", { selectedProfile, extensionSettings });
-	extensionSettings.selectedCompletionPreset = "current";
-	setSettingsInitialValues();
+	updateCompletionPresetsDropdown();
 	saveSettingsDebounced();
+}
+
+function onMainSettingsConnectionProfileChange() {
+	if(extensionSettings.selectedProfile === "current") {
+		debug("Connection profile changed. Updating presets drop down");
+		extensionSettings.selectedCompletionPreset = "current";
+		updateCompletionPresetsDropdown();
+	}
 }
 
 // #endregion
@@ -235,15 +283,32 @@ function onConnectionProfileSelectChange() {
 
 function getCompletionPresets() {
 	const ctx = getContext();
-	let presetNames;
-	if (extensionSettings.selectedProfile !== "current") {
-		presetNames = ctx.getPresetManager().getPresetList(extensionSettings.selectedProfileApi).preset_names;
+	let validPresetNames = [];
+
+	if(extensionSettings.selectedProfileMode === "cc") {
+		const presetManager = ctx.getPresetManager('openai');
+		const presets = presetManager.getPresetList().presets;
+		const presetNames = presetManager.getPresetList().preset_names;
+
+		let presetsDict = {};
+		for(const x in presetNames) presetsDict[x] = presets[presetNames[x]];
+		debug('available presetNames', presetNames);
+		debug('extensionSettings.selectedProfileApi', extensionSettings.selectedProfileApi);
+		debug('presetsDict', presetsDict);
+		for(const x in presetsDict) {
+			if(presetsDict[x].chat_completion_source === extensionSettings.selectedProfileApi) validPresetNames.push(x);
+		}
+		debug('validPresetNames', validPresetNames);
 	} else {
-		presetNames = ctx.getPresetManager().getPresetList().preset_names;
+		const presetManager = ctx.getPresetManager('textgenerationwebui');
+		const presetNames = presetManager.getPresetList().preset_names;
+
+		validPresetNames = presetNames;
+		if (Array.isArray(presetNames)) validPresetNames = presetNames;
+		else validPresetNames = Object.keys(validPresetNames);
 	}
 
-	if (Array.isArray(presetNames)) return presetNames
-	return Object.keys(presetNames);
+	return validPresetNames;
 }
 
 function updateCompletionPresetsDropdown() {

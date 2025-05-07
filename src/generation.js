@@ -58,7 +58,7 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 	const ctx = getContext();
 	const presetManager = ctx.getPresetManager();
 	const connectionManagerSettings = ctx.extensionSettings.connectionManager;
-	const preselectedPreset = presetManager.getSelectedPreset();
+	const preselectedPreset = presetManager.getSelectedPresetName();
 	const preselectedProfile = connectionManagerSettings.profiles.find(x => x.id === connectionManagerSettings.selectedProfile).name;
 
 	try {
@@ -69,7 +69,7 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 	
 		if (extensionSettings.selectedCompletionPreset !== "current") {
 			debug("overriding completion preset", extensionSettings.selectedCompletionPreset);
-			presetManager.selectPreset(extensionSettings.selectedCompletionPreset);
+			await ctx.executeSlashCommandsWithOptions(`/preset ${extensionSettings.selectedCompletionPreset}`);
 		}
 	
 		let tracker;
@@ -83,7 +83,7 @@ export async function generateTracker(mesNum, includedFields = FIELD_INCLUDE_OPT
 
 		if (extensionSettings.selectedCompletionPreset !== "current") {
 			debug("removing completion preset override back to ", preselectedPreset)
-			presetManager.selectPreset(preselectedPreset);
+			await ctx.executeSlashCommandsWithOptions(`/preset ${preselectedPreset}`);
 		}
 
 		if (!tracker) return null;
