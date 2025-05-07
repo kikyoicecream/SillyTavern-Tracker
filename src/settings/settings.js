@@ -296,7 +296,12 @@ function getCompletionPresets() {
 		debug('extensionSettings.selectedProfileApi', extensionSettings.selectedProfileApi);
 		debug('presetsDict', presetsDict);
 		for(const x in presetsDict) {
-			if(presetsDict[x].chat_completion_source === extensionSettings.selectedProfileApi) validPresetNames.push(x);
+			if(presetsDict[x].chat_completion_source === extensionSettings.selectedProfileApi) {
+				validPresetNames.push(x);
+			}
+			else if (presetsDict[x].chat_completion_source === ctx.CONNECT_API_MAP[extensionSettings.selectedProfileApi]?.source) {
+				validPresetNames.push(x)
+			}
 		}
 		debug('validPresetNames', validPresetNames);
 	} else {
