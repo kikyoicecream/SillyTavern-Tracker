@@ -507,6 +507,8 @@ const responseLength = 0;
 
 export const defaultSettings = {
 	enabled: true,
+	selectedProfile: "current",
+	selectedCompletionPreset: "current",
 	generationTarget: generationTargets.BOTH,
 	showPopupFor: generationTargets.NONE,
 	trackerFormat: trackerFormat.YAML,
