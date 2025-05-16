@@ -221,7 +221,7 @@ function initializeOverridesDropdowns() {
 	try {
 		const ctx = getContext();
 		const connectionManager = ctx.extensionSettings.connectionManager;
-		if(connectionManager.profiles.length === 0) {
+		if(connectionManager.profiles.length === 0 && extensionSettings.enabled) {
 			toastr.warning("No saved connection profiles. Tracker connection & completion presets overrides won't work without at least one saved profile")
 			return;
 		}
