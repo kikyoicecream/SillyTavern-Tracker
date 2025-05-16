@@ -219,9 +219,13 @@ function updateConnectionProfileDropdown() {
 
 function initializeOverridesDropdowns() {
 	try {
-		updateConnectionProfileDropdown();
 		const ctx = getContext();
 		const connectionManager = ctx.extensionSettings.connectionManager;
+		if(connectionManager.profiles.length === 0 && extensionSettings.enabled) {
+			toastr.warning("No saved connection profiles. Tracker connection & completion presets overrides won't work without at least one saved profile")
+			return;
+		}
+		updateConnectionProfileDropdown();
 	
 		let actualSelectedProfile;
 		if(extensionSettings.selectedProfile === 'current') {
