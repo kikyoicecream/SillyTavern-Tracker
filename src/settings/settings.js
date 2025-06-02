@@ -221,7 +221,7 @@ function initializeOverridesDropdowns() {
 	try {
 		const ctx = getContext();
 		const connectionManager = ctx.extensionSettings.connectionManager;
-		if(connectionManager.profiles.length === 0 && extensionSettings.enabled && extensionSettings.enabled) {
+		if(connectionManager.profiles.length === 0 && extensionSettings.enabled) {
 			return;
 		}
 		updateConnectionProfileDropdown();
