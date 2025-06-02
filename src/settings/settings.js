@@ -222,7 +222,6 @@ function initializeOverridesDropdowns() {
 		const ctx = getContext();
 		const connectionManager = ctx.extensionSettings.connectionManager;
 		if(connectionManager.profiles.length === 0 && extensionSettings.enabled) {
-			toastr.warning("No saved connection profiles. Tracker connection & completion presets overrides won't work without at least one saved profile")
 			return;
 		}
 		updateConnectionProfileDropdown();
@@ -260,13 +259,13 @@ function onConnectionProfileSelectChange() {
 		actualSelectedProfile = connectionManager.profiles.find(x => x.id === connectionManager.selectedProfile);
 		extensionSettings.selectedProfileApi = actualSelectedProfile.api;
 		extensionSettings.selectedProfileMode = actualSelectedProfile.mode;
-
 	} else {
 		actualSelectedProfile = connectionManager.profiles.find(x => x.name === selectedProfile);
 		extensionSettings.selectedProfileApi = actualSelectedProfile.api;
 		extensionSettings.selectedProfileMode = actualSelectedProfile.mode;
 	}
 
+	extensionSettings.selectedCompletionPreset = "current";
 
 	debug("Selected profile:", { selectedProfile, extensionSettings });
 	updateCompletionPresetsDropdown();
