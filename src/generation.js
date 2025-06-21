@@ -47,22 +47,37 @@ function conditionalSection(template, sectionName, condition, content) {
 // #endregion
 
 /**
+ * A helper function to introduce a delay.
+ * @param {number} ms - The delay in milliseconds.
+ * @returns {Promise<void>}
+ */
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+/**
  * Overrides the current connection profile and completion preset if they are not set to "current".
  * @param {string} profileName - The connection profile name.
  * @param {string} completionPresetName - The completion preset name.
  * @returns {Promise<null>}
  */
 async function changeProfileAndCompletionPreset(profileName, completionPresetName) {
-	const ctx = getContext();
-	if (extensionSettings.selectedProfile !== "current") {
-		debug("changing connection profile to", profileName);
-		await ctx.executeSlashCommandsWithOptions(`/profile ${profileName}`);
-	}
+    const ctx = getContext();
+    let profileSwitched = false;
 
-	if (extensionSettings.selectedCompletionPreset !== "current") {
-		debug("changing completion preset to", completionPresetName);
-		await ctx.executeSlashCommandsWithOptions(`/preset ${completionPresetName}`);
-	}
+    if (extensionSettings.selectedProfile !== "current") {
+        debug("changing connection profile to", profileName);
+        await ctx.executeSlashCommandsWithOptions(`/profile ${profileName}`);
+        profileSwitched = true;
+    }
+
+    if (extensionSettings.selectedCompletionPreset !== "current") {
+        debug("changing completion preset to", completionPresetName);
+        await ctx.executeSlashCommandsWithOptions(`/preset ${completionPresetName}`);
+    }
+
+    if (profileSwitched) {
+        debug("Delaying for 2000ms after profile switch to ensure connection is ready.");
+        await delay(2000);
+    }
 }
 
 /**
