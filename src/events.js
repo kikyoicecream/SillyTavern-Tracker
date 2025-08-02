@@ -1,328 +1,111 @@
-#trackerInterface {
-	top: unset;
-	flex-direction: column;
-	padding: 10px;
-	gap: 10px;
-	#trackerInterfaceHeader {
-		font-size: 17.55px;
-		font-weight: 700;
-	}
+import { chat } from "../../../../../script.js";
+import { selected_group, is_group_generating } from "../../../../../scripts/group-chats.js";
+import { debug, getLastMessageWithTracker, getLastNonSystemMessageIndex, log } from "../lib/utils.js";
+import { isEnabled } from "./settings/settings.js";
+import { prepareMessageGeneration, addTrackerToMessage, clearInjects } from "./tracker.js";
+import { releaseGeneration } from "../lib/interconnection.js";
+import { FIELD_INCLUDE_OPTIONS, getTracker, OUTPUT_FORMATS, saveTracker } from "./trackerDataHandler.js";
+import { TrackerInterface } from "./ui/trackerInterface.js";
+import { extensionSettings } from "../index.js";
+import { TrackerPreviewManager } from "./ui/trackerPreviewManager.js";
 
-	#trackerInterfaceFooter {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-wrap: nowrap;
-		gap: 10px;
-
-		button {
-			width: fit-content;
-		}
-	}
+/**
+ * Event handler for when the chat changes.
+ * @param {object} args - The event arguments.
+ */
+async function onChatChanged(args) { 
+	await clearInjects();
+	if (!await isEnabled()) return;
+	log("Chat changed:", args);
+	updateTrackerInterface();
+	//TrackerPreviewManager.init();
+	releaseGeneration();
 }
 
-.tracker-editor-container,
-.tracker-view-container {
-	text-align: start;
-
-	.tracker-editor-field,
-	.tracker-view-field {
-		width: 100%;
-
-		.tracker-editor-label,
-		.tracker-view-label {
-			font-weight: bold;
-		}
-
-		.tracker-editor-list-item,
-		.tracker-editor-nested,
-		.tracker-view-nested {
-			padding-left: 20px;
-		}
-
-		.tracker-editor-textarea {
-			resize: none;
-			overflow: hidden;
-			min-height: 0px;
-			box-sizing: border-box;
-		}
+/**
+ * Event handler for after generation commands.
+ * @param {string} type - The type of generation.
+ * @param {object} options - Generation options.
+ * @param {boolean} dryRun - Whether it's a dry run.
+ */
+async function onGenerateAfterCommands(type, options, dryRun) {
+	if(!extensionSettings.enabled) await clearInjects();
+	const enabled = await isEnabled();
+	if (!enabled || chat.length == 0 || (selected_group && !is_group_generating) || (typeof type != "undefined" && !["continue", "swipe", "regenerate", "impersonate", "group_chat"].includes(type))) {
+		debug("GENERATION_AFTER_COMMANDS Tracker skipped", {extenstionEnabled: extensionSettings.enabled, freeToRun: enabled, selected_group, is_group_generating, type});
+		return;
 	}
-
-	.menu_button {
-		white-space: nowrap;
-	}
+	log("GENERATION_AFTER_COMMANDS ", [type, options, dryRun]);
+	await prepareMessageGeneration(type, options, dryRun);
+	releaseGeneration();
 }
 
-.mes_tracker {
-	.tracker_default_mes_template {
-		font-size: smaller;
-		tr {
-			td {
-				vertical-align: top;
-				&:first-child {
-					text-align: right;
-					font-weight: bold;
-					width: 60px;
-				}
-			}
-		}
-		details {
-			summary {
-				font-weight: bold;
-				span {
-					left: -3.25px;
-					position: relative;
-					display: inline-block;
-				}
-			}
-			table,
-			.mes_tracker_characters {
-				padding-left: 20px;
-			}
-		}
-	}
+/**
+ * Event handler for when a message is received.
+ * @param {number} mesId - The message ID.
+ */
+async function onMessageReceived(mesId) {
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	log("MESSAGE_RECEIVED", mesId);
+	await addTrackerToMessage(mesId);
+	releaseGeneration();
 }
 
-.tracker-prompt-maker-modal {
-	width: var(--sheldWidth) !important;
+/**
+ * Event handler for when a message is sent.
+ * @param {number} mesId - The message ID.
+ */
+async function onMessageSent(mesId) {
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	log("MESSAGE_SENT", mesId);
+	await addTrackerToMessage(mesId);
+	releaseGeneration();
 }
 
-.tracker-prompt-maker {
-	text-align: left;
-
-	> .fields-container {
-		max-height: 80vh;
-		overflow-y: scroll;
-
-		> .field-wrapper {
-			background-color: rgba(125, 125, 125, 0.3);
-		}
-	}
-
-	.field-wrapper {
-		border: 1px solid var(--SmartThemeBorderColor);
-		border-radius: 10px;
-		padding: 10px;
-		margin-bottom: 10px;
-		background-color: var(--black30a);
-
-		select {
-			margin-top: 5px;
-			margin-bottom: 5px;
-		}
-
-		.name-dynamic-type-wrapper {
-			display: flex;
-			gap: 10px;
-			align-items: center;
-
-			.field-name-wrapper {
-				flex-grow: 1;
-				flex-shrink: 1 !important;
-			}
-
-			.field-name-wrapper,
-			.field-type-wrapper,
-			.presence-wrapper {
-				display: flex;
-				flex-wrap: nowrap;
-				gap: 5px;
-				flex-shrink: 0;
-				align-items: center;
-
-				label {
-					white-space: nowrap;
-					overflow: hidden;
-					flex-shrink: 0;
-				}
-			}
-		}
-
-		.prompt-default-example-wrapper {
-			display: flex;
-			flex-wrap: nowrap;
-			gap: 5px;
-
-			.prompt-wrapper,
-			.default-example-wrapper {
-				width: 100%;
-			}
-
-			.prompt-wrapper {
-				width: 100%;
-
-				textarea {
-					height: calc(100% - 30px);
-				}
-			}
-
-			.default-value-wrapper {
-				display: flex;
-				flex-wrap: nowrap;
-				gap: 5px;
-				flex-shrink: 0;
-				align-items: center;
-
-				label {
-					white-space: nowrap;
-					overflow: hidden;
-					flex-shrink: 0;
-				}
-			}
-		}
-
-		.buttons-wrapper {
-			button {
-				margin: 0;
-			}
-		}
-	}
-
-	.buttons-wrapper {
-		display: flex;
-		flex-wrap: nowrap;
-		gap: 5px;
-		justify-content: center;
-
-		button {
-			white-space: nowrap;
-			background-color: var(--black30a);
-
-			&:hover {
-				background-color: var(--white30a);
-			}
-		}
-	}
-
-	.drag-handle {
-		cursor: move; /* Changes the cursor to indicate draggable area */
-		font-size: 18px; /* Increases the size for better visibility */
-		user-select: none; /* Prevents text selection when dragging */
-	}
-
-	/* Placeholder styling */
-	.ui-sortable-placeholder {
-		border: 1px dashed #ccc; /* Dashed border */
-		visibility: visible !important;
-	}
-
-	/* Helper styling during dragging */
-	.ui-sortable-helper {
-		z-index: 1000; /* Ensure the helper appears above other elements */
-		pointer-events: none; /* Prevent interaction with the helper */
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for clarity */
-	}
-
-	.fields-container.dragging > .field-wrapper,
-	.nested-fields-container.dragging > .field-wrapper {
-		user-select: none;
-		-moz-user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
-
-	/* Shrink sibling fields in the same container during drag */
-	.fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .prompt-default-example-wrapper,
-	.fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .buttons-wrapper,
-	.fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .nested-fields-container {
-		display: none;
-	}
-
-	.nested-fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .prompt-default-example-wrapper,
-	.nested-fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .buttons-wrapper,
-	.nested-fields-container.dragging > .field-wrapper:not(.ui-sortable-helper) > .nested-fields-container {
-		display: none;
-	}
+/**
+ * Event handler for when a character's message is rendered.
+ */
+async function onCharacterMessageRendered(mesId) {
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	log("CHARACTER_MESSAGE_RENDERED");
+	await addTrackerToMessage(mesId);
+	releaseGeneration();
+	updateTrackerInterface();
 }
 
-.tracker-modal-control-bar {
-	position: absolute;
-	width: 100%;
-	right: 0;
-	padding: 6px;
-	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	gap: 5px;
-
-	#TrackerPromptModalClose {
-		height: 15px;
-		aspect-ratio: 1 / 1;
-		font-size: calc(var(--mainFontSize) * 1.3);
-		opacity: 0.5;
-		transition: all 250ms;
-		filter: drop-shadow(0px 0px 2px black);
-		text-shadow: none;
-		transition: opacity 200ms;
-
-		&:hover {
-			opacity: 1 !important;
-			cursor: pointer;
-		}
-	}
+/**
+ * Event handler for when a user's message is rendered.
+ */
+async function onUserMessageRendered(mesId) {
+	if (!await isEnabled() || !chat[mesId] || (chat[mesId].tracker && Object.keys(chat[mesId].tracker).length !== 0)) return;
+	log("USER_MESSAGE_RENDERED");
+	await addTrackerToMessage(mesId);
+	releaseGeneration();
+	updateTrackerInterface();
 }
 
-.tracker-object-editor .field-wrapper,
-.tracker-object-editor .object-wrapper,
-.tracker-object-editor .array-wrapper {
-	border: 1px solid #ccc;
-	padding: 10px;
-	margin-bottom: 10px;
+async function generateAfterCombinePrompts(prompt) {
+	debug("GENERATE_AFTER_COMBINE_PROMPTS", {prompt});
 }
 
-.tracker-prompt-maker input,
-.tracker-prompt-maker select,
-.tracker-object-editor input {
-	margin-bottom: 5px;
-}
+export const eventHandlers = {
+	onChatChanged,
+	onGenerateAfterCommands,
+	onMessageReceived,
+	onMessageSent,
+	onCharacterMessageRendered,
+	onUserMessageRendered,
+	generateAfterCombinePrompts
+};
 
-.tracker-prompt-maker input:not([type="checkbox"]):not([type="radio"]),
-.tracker-prompt-maker select,
-.tracker-object-editor input:not([type="checkbox"]):not([type="radio"]) {
-	display: block;
-	width: 100%;
-}
-
-.tracker-prompt-maker .nested-fields-container,
-.tracker-object-editor .nested-container {
-	margin-left: 20px;
-	margin-top: 10px;
-}
-
-.tracker-object-editor button {
-	margin-right: 5px;
-}
-
-.tracker-object-editor {
-	max-height: 80vh;
-	overflow-y: scroll;
-}
-
-.tracker-modal-content {
-	.tracker-editor-container {
-		max-height: 80vh;
-		overflow-y: scroll;
-	}
-}
-
-.tracker-modal-footer {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 10px;
-}
-
-.tracker-preset-buttons {
-	display: flex;
-}
-
-#tracker_reset_presets {
-	&:hover {
-		background-color: #a90000;
-	}
-}
-
-label[for="tracker_reset_presets"] {
-	display: flex;
-	align-items: center;
+function updateTrackerInterface() {
+	const lastMesWithTrackerId = getLastMessageWithTracker();
+	const tracker = chat[lastMesWithTrackerId]?.tracker ?? {};
+	if(Object.keys(tracker).length === 0) return;
+	const trackerData = getTracker(tracker, extensionSettings.trackerDef, FIELD_INCLUDE_OPTIONS.ALL, false, OUTPUT_FORMATS.JSON); // Get tracker data for the last message
+	const onSave = (updatedTracker) => {
+		saveTracker(updatedTracker, extensionSettings.trackerDef, lastMesWithTrackerId);
+	};
+	const trackerInterface = new TrackerInterface();
+	trackerInterface.init(trackerData, lastMesWithTrackerId, onSave);
 }
